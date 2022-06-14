@@ -31,13 +31,13 @@ let package = Package(
 extension Package {
     static var remoteDependencies: [Package.Dependency] {
         [
-            .package(url: "git@github.com:galen-it/darwell-logger.git", from: "0.1.0"),
+            .package(url: "git@github.com:galen-it/darwin-logger.git", from: "0.1.0"),
         ]
     }
 
     static var perduxDependencies: [Target.Dependency] {
         [
-            .product(name: "Logger", package: "darwell-logger"),
+            .product(name: "Logger", package: "darwin-logger"),
         ]
     }
 }

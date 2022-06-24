@@ -16,8 +16,10 @@ open class PerduxState: ObservableObject {
 
     public init() {}
 
+    open func reduce(with action: PerduxAction) async {
+    }
+
     open func reduce(with action: PerduxAction) {
-        fatalError("\(#function) NOT IMPLEMENTED")
     }
 
     open func cleanup() throws {

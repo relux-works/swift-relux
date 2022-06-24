@@ -42,6 +42,14 @@ public class ActionDispatcher {
         }
     }
 
+    public class func emitAsyncMain<Action: PerduxAction>(_ action: Action, delay: Double) {
+        log(action)
+        DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
+            subscribers.forEach {
+                $0.notify(action)
+            }
+        }
+    }
     public class func emitAsyncMain<Action: PerduxAction>(_ action: Action) {
         log(action)
         DispatchQueue.main.async {

@@ -14,7 +14,10 @@ public class PerduxStore: ActionDispatcherSubscriber {
 
     func notify(_ action: PerduxAction) {
         states
-                .forEach { $0.reduce(with: action) }
+                .forEach { state in
+                    state.reduce(with: action)
+                    Task { await state.reduce(with: action) }
+                }
     }
 
     public func getState<T: PerduxState>(_ type: T.Type) -> T {

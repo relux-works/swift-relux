@@ -15,26 +15,26 @@ public class ActionDispatcher {
         subscribers.append(subscriber)
     }
 
-    public class func emitSync<Action: PerduxAction>(_ action: Action) {
-        log(action)
-        Action.executionQueue.sync {
+    public class func emitSync(_ action: PerduxAction) {
+      //  log(action)
+        action.executionQueue.sync {
             subscribers.forEach {
                 $0.notify(action)
             }
         }
     }
 
-    public class func emitAsync<Action: PerduxAction>(_ action: Action){
-        log(action)
-        Action.executionQueue.async {
+    public class func emitAsync(_ action: PerduxAction){
+     //   log(action)
+        action.executionQueue.async {
             subscribers.forEach {
                 $0.notify(action)
             }
         }
     }
 
-    public class func emitAsync<Action: PerduxAction>(_ action: Action, queue: DispatchQueue) {
-        log(action)
+    public class func emitAsync(_ action: PerduxAction, queue: DispatchQueue) {
+      //  log(action)
         queue.async {
             subscribers.forEach {
                 $0.notify(action)
@@ -42,16 +42,16 @@ public class ActionDispatcher {
         }
     }
 
-    public class func emitAsyncMain<Action: PerduxAction>(_ action: Action, delay: Double) {
-        log(action)
+    public class func emitAsyncMain(_ action: PerduxAction, delay: Double) {
+     //   log(action)
         DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
             subscribers.forEach {
                 $0.notify(action)
             }
         }
     }
-    public class func emitAsyncMain<Action: PerduxAction>(_ action: Action) {
-        log(action)
+    public class func emitAsyncMain(_ action: PerduxAction) {
+    //    log(action)
         DispatchQueue.main.async {
             subscribers.forEach {
                 $0.notify(action)
@@ -59,24 +59,23 @@ public class ActionDispatcher {
         }
     }
 
-    public class func emitAsync<Action: PerduxAction>(_ action: Action, delay: Double) {
-        log(action)
-        Action.executionQueue.asyncAfter(deadline: .now() + delay) {
+    public class func emitAsync(_ action: PerduxAction, delay: Double) {
+       // log(action)
+        action.executionQueue.asyncAfter(deadline: .now() + delay) {
             subscribers.forEach {
                 $0.notify(action)
             }
         }
     }
 
-    public class func emitAsync<Action: PerduxAction>(_ actions: [Action]) {
-        Action.executionQueue.async {
+    public class func emitAsync(_ actions: [PerduxAction]) {
+        actions.forEach { action in
+            //log(action)
+        }
 
+        subscribers.forEach { subscriber in
             actions.forEach { action in
-                log(action)
-            }
-
-            subscribers.forEach { subscriber in
-                actions.forEach { action in
+                action.executionQueue.async {
                     subscriber.notify(action)
                 }
             }

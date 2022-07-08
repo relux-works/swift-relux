@@ -15,8 +15,13 @@ public class ActionDispatcher {
         subscribers.append(subscriber)
     }
 
-    public class func emitSync(_ action: PerduxAction) {
-        log(action)
+    public class func emitSync(
+            _ action: PerduxAction,
+            fileID: String = #fileID,
+            functionName: String = #function,
+            lineNumber: Int = #line
+    ) {
+        log(action, fileID: fileID, functionName: functionName, lineNumber: lineNumber)
         action.executionQueue.sync {
             subscribers.forEach {
                 $0.notify(action)
@@ -24,8 +29,13 @@ public class ActionDispatcher {
         }
     }
 
-    public class func emitAsync(_ action: PerduxAction) {
-        log(action)
+    public class func emitAsync(
+            _ action: PerduxAction,
+            fileID: String = #fileID,
+            functionName: String = #function,
+            lineNumber: Int = #line
+    ) {
+        log(action, fileID: fileID, functionName: functionName, lineNumber: lineNumber)
         action.executionQueue.async {
             subscribers.forEach {
                 $0.notify(action)
@@ -33,8 +43,14 @@ public class ActionDispatcher {
         }
     }
 
-    public class func emitAsync(_ action: PerduxAction, queue: DispatchQueue) {
-        log(action)
+    public class func emitAsync(
+            _ action: PerduxAction,
+            queue: DispatchQueue,
+            fileID: String = #fileID,
+            functionName: String = #function,
+            lineNumber: Int = #line
+    ) {
+        log(action, fileID: fileID, functionName: functionName, lineNumber: lineNumber)
         queue.async {
             subscribers.forEach {
                 $0.notify(action)
@@ -42,16 +58,27 @@ public class ActionDispatcher {
         }
     }
 
-    public class func emitAsyncMain(_ action: PerduxAction, delay: Double) {
-        log(action)
+    public class func emitAsyncMain(
+            _ action: PerduxAction,
+            delay: Double,
+            fileID: String = #fileID,
+            functionName: String = #function,
+            lineNumber: Int = #line
+    ) {
+        log(action, fileID: fileID, functionName: functionName, lineNumber: lineNumber)
         DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
             subscribers.forEach {
                 $0.notify(action)
             }
         }
     }
-    public class func emitAsyncMain(_ action: PerduxAction) {
-        log(action)
+    public class func emitAsyncMain(
+            _ action: PerduxAction,
+            fileID: String = #fileID,
+            functionName: String = #function,
+            lineNumber: Int = #line
+    ) {
+        log(action, fileID: fileID, functionName: functionName, lineNumber: lineNumber)
         DispatchQueue.main.async {
             subscribers.forEach {
                 $0.notify(action)
@@ -59,8 +86,14 @@ public class ActionDispatcher {
         }
     }
 
-    public class func emitAsync(_ action: PerduxAction, delay: Double) {
-        log(action)
+    public class func emitAsync(
+            _ action: PerduxAction,
+            delay: Double,
+            fileID: String = #fileID,
+            functionName: String = #function,
+            lineNumber: Int = #line
+    ) {
+        log(action, fileID: fileID, functionName: functionName, lineNumber: lineNumber)
         action.executionQueue.asyncAfter(deadline: .now() + delay) {
             subscribers.forEach {
                 $0.notify(action)
@@ -68,22 +101,15 @@ public class ActionDispatcher {
         }
     }
 
-    public class func emitAsync(_ actions: [PerduxAction]) {
-        actions.forEach { log($0) }
-
-        subscribers.forEach { subscriber in
-            actions.forEach { action in
-                action.executionQueue.async {
-                    subscriber.notify(action)
-                }
-            }
-        }
-    }
-
-    public class func emitAsync(_ actions: [PerduxAction], delay: Double) {
+    public class func emitAsync(
+            _ actions: [PerduxAction],
+            fileID: String = #fileID,
+            functionName: String = #function,
+            lineNumber: Int = #line
+    ) {
         actions.forEach { action in
-            action.executionQueue.asyncAfter(deadline: .now() + delay) {
-                log(action)
+            action.executionQueue.async {
+                log(action, fileID: fileID, functionName: functionName, lineNumber: lineNumber)
                 subscribers.forEach { subscriber in
                     subscriber.notify(action)
                 }
@@ -91,4 +117,20 @@ public class ActionDispatcher {
         }
     }
 
+    public class func emitAsync(
+            _ actions: [PerduxAction],
+            delay: Double,
+            fileID: String = #fileID,
+            functionName: String = #function,
+            lineNumber: Int = #line
+    ) {
+        actions.forEach { action in
+            action.executionQueue.asyncAfter(deadline: .now() + delay) {
+                log(action, fileID: fileID, functionName: functionName, lineNumber: lineNumber)
+                subscribers.forEach { subscriber in
+                    subscriber.notify(action)
+                }
+            }
+        }
+    }
 }

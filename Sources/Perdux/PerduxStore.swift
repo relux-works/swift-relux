@@ -26,6 +26,6 @@ public class PerduxStore: ActionDispatcherSubscriber {
     }
 
     deinit {
-        log("deinitialized")
+        log("deinit")
     }
 }

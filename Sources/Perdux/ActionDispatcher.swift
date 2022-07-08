@@ -79,4 +79,16 @@ public class ActionDispatcher {
             }
         }
     }
+
+    public class func emitAsync(_ actions: [PerduxAction], delay: Double) {
+        actions.forEach { action in
+            action.executionQueue.asyncAfter(deadline: .now() + delay) {
+                log(action)
+                subscribers.forEach { subscriber in
+                    subscriber.notify(action)
+                }
+            }
+        }
+    }
+
 }

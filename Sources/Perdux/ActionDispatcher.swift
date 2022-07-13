@@ -117,6 +117,22 @@ public class ActionDispatcher {
         }
     }
 
+    public class func emitSync(
+            _ actions: [PerduxAction],
+            fileID: String = #fileID,
+            functionName: String = #function,
+            lineNumber: Int = #line
+    ) {
+        actions.forEach { action in
+            action.executionQueue.sync {
+                log(action, fileID: fileID, functionName: functionName, lineNumber: lineNumber)
+                subscribers.forEach { subscriber in
+                    subscriber.notify(action)
+                }
+            }
+        }
+    }
+
     public class func emitAsync(
             _ actions: [PerduxAction],
             delay: Double,

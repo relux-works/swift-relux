@@ -15,7 +15,6 @@ public class PerduxStore: ActionDispatcherSubscriber {
     func notify(_ action: PerduxAction) {
         states
                 .forEach { state in
-                    state.reduce(with: action)
                     Task { await state.reduce(with: action) }
                 }
     }

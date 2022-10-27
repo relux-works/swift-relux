@@ -25,5 +25,5 @@ Carthage/Build
 *.resolved
 *.xcworkspace
 *.framework
-*.xcframework.gitrelease
+*.xcframework
 .gitrelease

@@ -16,8 +16,6 @@ public protocol PerduxState {
 
     func reduce(with action: PerduxAction) async
 
-    func reduce(with action: PerduxAction)
-
     func cleanup()
 
 //    func handleDidChange(sender: Any, name: String, oldValue: Any?, newValue: Any?) {

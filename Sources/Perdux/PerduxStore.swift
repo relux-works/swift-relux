@@ -5,17 +5,17 @@ public class PerduxStore: ActionDispatcherSubscriber {
     private(set) var states: [PerduxState] = []
 
     public init() {
-        ActionDispatcher.subscribe(self)
+        ActionDispatcher.connect(self)
     }
 
     public func connect(state: PerduxState) {
         states.append(state)
     }
 
-    func notify(_ action: PerduxAction) {
-        states
-                .forEach { state in
-                    Task { await state.reduce(with: action) }
+    func notify(_ action: PerduxAction) async {
+        await states
+                .concurrentForEach { state in
+                    await state.reduce(with: action)
                 }
     }
 

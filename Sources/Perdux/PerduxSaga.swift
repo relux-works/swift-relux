@@ -1,26 +1,26 @@
 import Foundation
 
 public protocol PerduxSaga {
-    func apply(_ effect: PerduxEffect)
+    func apply(_ effect: PerduxEffect) async
 }
 
 public class PerduxRootSaga: ActionDispatcherSubscriber {
     private var sagas: [PerduxSaga] = []
 
     public init() {
-        ActionDispatcher.subscribe(self)
+        ActionDispatcher.connect(self)
     }
 
     public func add(saga: PerduxSaga) {
         sagas.append(saga)
     }
 
-    public func notify(_ action: PerduxAction) {
+    public func notify(_ action: PerduxAction) async {
         guard let effect = action as? PerduxEffect else {
             return
         }
 
-        sagas
-                .forEach { $0.apply(effect) }
+        await sagas
+                .concurrentForEach { await $0.apply(effect) }
     }
 }

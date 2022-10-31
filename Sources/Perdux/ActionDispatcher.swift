@@ -3,87 +3,63 @@ import Foundation
 import Logger
 
 protocol ActionDispatcherSubscriber {
-    func notify(_ action: PerduxAction)
+    func notify(_ action: PerduxAction) async
 }
 
-public typealias AD = ActionDispatcher
+extension Collection where Element == PerduxAction {
+    public func concurrentPerform(
+            fileID: String = #fileID,
+            functionName: String = #function,
+            lineNumber: Int = #line
+    ) async {
+        await ActionDispatcher.concurrentPerform(self.map { $0 }, fileID: fileID, functionName: functionName, lineNumber: lineNumber)
+    }
+
+    public func concurrentPerform(
+            delay: Double,
+            fileID: String = #fileID,
+            functionName: String = #function,
+            lineNumber: Int = #line
+    ) async {
+        await ActionDispatcher.concurrentPerform(self.map { $0 }, delay: delay, fileID: fileID, functionName: functionName, lineNumber: lineNumber)
+    }
+}
+
+extension PerduxAction {
+    public func perform(
+            fileID: String = #fileID,
+            functionName: String = #function,
+            lineNumber: Int = #line
+    ) async {
+        await ActionDispatcher.emitAsync(self, fileID: fileID, functionName: functionName, lineNumber: lineNumber)
+    }
+
+    public func delayedPerform(
+            delay: Double,
+            fileID: String = #fileID,
+            functionName: String = #function,
+            lineNumber: Int = #line
+    ) async {
+        await ActionDispatcher.emitAsync(self, delay: delay, fileID: fileID, functionName: functionName, lineNumber: lineNumber)
+    }
+}
 
 public class ActionDispatcher {
     private static var subscribers: [ActionDispatcherSubscriber] = []
 
-    class func subscribe(_ subscriber: ActionDispatcherSubscriber) {
+    class func connect(_ subscriber: ActionDispatcherSubscriber) {
         subscribers.append(subscriber)
     }
 
-    public class func emitSync(
-            _ action: PerduxAction,
-            fileID: String = #fileID,
-            functionName: String = #function,
-            lineNumber: Int = #line
-    ) {
-        log(action, fileID: fileID, functionName: functionName, lineNumber: lineNumber)
-        action.executionQueue.sync {
-            subscribers.forEach {
-                $0.notify(action)
-            }
-        }
-    }
-
     public class func emitAsync(
             _ action: PerduxAction,
             fileID: String = #fileID,
             functionName: String = #function,
             lineNumber: Int = #line
-    ) {
+    ) async {
         log(action, fileID: fileID, functionName: functionName, lineNumber: lineNumber)
-        action.executionQueue.async {
-            subscribers.forEach {
-                $0.notify(action)
-            }
-        }
-    }
-
-    public class func emitAsync(
-            _ action: PerduxAction,
-            queue: DispatchQueue,
-            fileID: String = #fileID,
-            functionName: String = #function,
-            lineNumber: Int = #line
-    ) {
-        log(action, fileID: fileID, functionName: functionName, lineNumber: lineNumber)
-        queue.async {
-            subscribers.forEach {
-                $0.notify(action)
-            }
-        }
-    }
-
-    public class func emitAsyncMain(
-            _ action: PerduxAction,
-            delay: Double,
-            fileID: String = #fileID,
-            functionName: String = #function,
-            lineNumber: Int = #line
-    ) {
-        log(action, fileID: fileID, functionName: functionName, lineNumber: lineNumber)
-        DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
-            subscribers.forEach {
-                $0.notify(action)
-            }
-        }
-    }
-    public class func emitAsyncMain(
-            _ action: PerduxAction,
-            fileID: String = #fileID,
-            functionName: String = #function,
-            lineNumber: Int = #line
-    ) {
-        log(action, fileID: fileID, functionName: functionName, lineNumber: lineNumber)
-        DispatchQueue.main.async {
-            subscribers.forEach {
-                $0.notify(action)
-            }
-        }
+        await subscribers
+                .concurrentForEach { await $0.notify(action) }
     }
 
     public class func emitAsync(
@@ -92,61 +68,43 @@ public class ActionDispatcher {
             fileID: String = #fileID,
             functionName: String = #function,
             lineNumber: Int = #line
-    ) {
+    ) async {
+        let delay = UInt64(delay * 1_000_000_000)
+        try? await Task<Never, Never>.sleep(nanoseconds: delay)
         log(action, fileID: fileID, functionName: functionName, lineNumber: lineNumber)
-        action.executionQueue.asyncAfter(deadline: .now() + delay) {
-            subscribers.forEach {
-                $0.notify(action)
-            }
-        }
+        await subscribers
+                .concurrentForEach { await $0.notify(action) }
     }
 
-    public class func emitAsync(
+    public class func concurrentPerform(
             _ actions: [PerduxAction],
             fileID: String = #fileID,
             functionName: String = #function,
             lineNumber: Int = #line
-    ) {
-        actions.forEach { action in
-            action.executionQueue.async {
+    ) async {
+        await actions
+                .concurrentForEach { action in
                 log(action, fileID: fileID, functionName: functionName, lineNumber: lineNumber)
-                subscribers.forEach { subscriber in
-                    subscriber.notify(action)
+                await subscribers
+                        .concurrentForEach { subscriber in await subscriber.notify(action)
                 }
-            }
         }
     }
 
-    public class func emitSync(
-            _ actions: [PerduxAction],
-            fileID: String = #fileID,
-            functionName: String = #function,
-            lineNumber: Int = #line
-    ) {
-        actions.forEach { action in
-            action.executionQueue.sync {
-                log(action, fileID: fileID, functionName: functionName, lineNumber: lineNumber)
-                subscribers.forEach { subscriber in
-                    subscriber.notify(action)
-                }
-            }
-        }
-    }
-
-    public class func emitAsync(
+    public class func concurrentPerform(
             _ actions: [PerduxAction],
             delay: Double,
             fileID: String = #fileID,
             functionName: String = #function,
             lineNumber: Int = #line
-    ) {
-        actions.forEach { action in
-            action.executionQueue.asyncAfter(deadline: .now() + delay) {
+    ) async {
+        let delay = UInt64(delay * 1_000_000_000)
+        try? await Task<Never, Never>.sleep(nanoseconds: delay)
+        await actions
+                .concurrentForEach { action in
                 log(action, fileID: fileID, functionName: functionName, lineNumber: lineNumber)
-                subscribers.forEach { subscriber in
-                    subscriber.notify(action)
-                }
-            }
+                await subscribers
+                        .concurrentForEach { subscriber in await subscriber.notify(action) }
         }
     }
 }

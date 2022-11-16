@@ -7,6 +7,14 @@ protocol ActionDispatcherSubscriber {
 }
 
 extension Collection where Element == PerduxAction {
+    public func sequentialPerform(
+            fileID: String = #fileID,
+            functionName: String = #function,
+            lineNumber: Int = #line
+    ) async {
+        await ActionDispatcher.sequentialPerform(self.map { $0 }, fileID: fileID, functionName: functionName, lineNumber: lineNumber)
+    }
+
     public func concurrentPerform(
             fileID: String = #fileID,
             functionName: String = #function,
@@ -75,6 +83,21 @@ public class ActionDispatcher {
         await subscribers
                 .concurrentForEach { await $0.notify(action) }
     }
+
+    public class func sequentialPerform(
+            _ actions: [PerduxAction],
+            fileID: String = #fileID,
+            functionName: String = #function,
+            lineNumber: Int = #line
+    ) async {
+        await actions
+                .asyncForEach { action in
+                    log(action, fileID: fileID, functionName: functionName, lineNumber: lineNumber)
+                    await subscribers
+                            .concurrentForEach { subscriber in await subscriber.notify(action) }
+                }
+    }
+
 
     public class func concurrentPerform(
             _ actions: [PerduxAction],

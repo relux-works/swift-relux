@@ -32,7 +32,7 @@ let package = Package(
 extension Package {
     static var remoteDependencies: [Package.Dependency] {
         [
-			.package(url: "git@github.com:ivalx1s/darwin-logger.git", from: "0.3.0"),
+			.package(url: "git@github.com:ivalx1s/darwin-logger.git", from: "0.5.0"),
         ]
     }
 

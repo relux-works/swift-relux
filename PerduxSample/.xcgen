@@ -1,0 +1,4 @@
+#!/bin/zsh
+
+xcodegen generate --spec PerduxSample.xcodeprojless
+open PerduxSample.xcodeproj

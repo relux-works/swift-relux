@@ -2,7 +2,7 @@ import Combine
 import Foundation
 import Logger
 
-protocol ActionDispatcherSubscriber {
+protocol ActionDispatcherSubscriber: AnyObject {
     func notify(_ action: PerduxAction) async
 }
 
@@ -52,11 +52,17 @@ extension PerduxAction {
     }
 }
 
+extension ActionDispatcher {
+    struct AnyObserver {
+        weak var observer: ActionDispatcherSubscriber?
+    }
+}
+
 public class ActionDispatcher {
-    private static var subscribers: [ActionDispatcherSubscriber] = []
+    private static var subscribers: [AnyObserver] = []
 
     class func connect(_ subscriber: ActionDispatcherSubscriber) {
-        subscribers.append(subscriber)
+        subscribers.append(.init(observer: subscriber))
     }
 
     public class func emitAsync(
@@ -67,7 +73,7 @@ public class ActionDispatcher {
     ) async {
         log(action, fileID: fileID, functionName: functionName, lineNumber: lineNumber)
         await subscribers
-                .concurrentForEach { await $0.notify(action) }
+                .concurrentForEach { await $0.observer?.notify(action) }
     }
 
     public class func emitAsync(
@@ -81,7 +87,7 @@ public class ActionDispatcher {
         try? await Task<Never, Never>.sleep(nanoseconds: delay)
         log(action, fileID: fileID, functionName: functionName, lineNumber: lineNumber)
         await subscribers
-                .concurrentForEach { await $0.notify(action) }
+                .concurrentForEach { await $0.observer?.notify(action) }
     }
 
     public class func sequentialPerform(
@@ -94,7 +100,7 @@ public class ActionDispatcher {
                 .asyncForEach { action in
                     log(action, fileID: fileID, functionName: functionName, lineNumber: lineNumber)
                     await subscribers
-                            .concurrentForEach { subscriber in await subscriber.notify(action) }
+                            .concurrentForEach { await $0.observer?.notify(action) }
                 }
     }
 
@@ -109,7 +115,7 @@ public class ActionDispatcher {
                 .concurrentForEach { action in
                 log(action, fileID: fileID, functionName: functionName, lineNumber: lineNumber)
                 await subscribers
-                        .concurrentForEach { subscriber in await subscriber.notify(action)
+                        .concurrentForEach { await $0.observer?.notify(action)
                 }
         }
     }
@@ -127,7 +133,7 @@ public class ActionDispatcher {
                 .concurrentForEach { action in
                 log(action, fileID: fileID, functionName: functionName, lineNumber: lineNumber)
                 await subscribers
-                        .concurrentForEach { subscriber in await subscriber.notify(action) }
+                        .concurrentForEach { await $0.observer?.notify(action) }
         }
     }
 }

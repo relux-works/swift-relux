@@ -30,3 +30,4 @@ Carthage/Build
  *.pbxproj
 *.xcscheme
 *.entitlements
+*.xcodeproj/

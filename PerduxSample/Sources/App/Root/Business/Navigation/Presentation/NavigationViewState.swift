@@ -31,5 +31,9 @@ class NavigationViewState: PerduxViewState {
         await navState.$modalSheet
                 .receive(on: DispatchQueue.main)
                 .assign(to: &$modalSheet)
+        
+        await navState.$alert
+                .receive(on: DispatchQueue.main)
+                .assign(to: &$alert)
     }
 }

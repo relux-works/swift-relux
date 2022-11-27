@@ -20,17 +20,25 @@ struct ContentContainer: View {
     private var content: some View {
         switch navState.rootPage {
         case .splash: splash
+        case .onboarding: onboarding
         case .app: app
         }
     }
 
     private var splash: some View {
         SplashContainer()
+                .environmentObject(appStore.getViewState(SettingsViewState.self))
+    }
+
+    private var onboarding: some View {
+        OnboardingContainer()
+                .environmentObject(appStore.getViewState(SettingsViewState.self))
     }
 
     private var app: some View {
         AppMainContainer()
                 .environmentObject(appStore.getViewState(NavigationViewState.self))
+                .environmentObject(appStore.getViewState(SettingsViewState.self))
     }
 }
 

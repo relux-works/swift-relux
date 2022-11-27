@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct SplashContainer: View {
+    @EnvironmentObject private var settingsState: SettingsViewState
 
     var body: some View {
         content
@@ -10,12 +11,17 @@ struct SplashContainer: View {
         Splash(
             props: .init(),
             actions: .init(
-                next: navigateToApp
+                next: next
             )
         )
     }
 
-    private func navigateToApp() async {
-        await NavigationAction.setRootPage(new: .app).perform()
+    private func next() async {
+        switch settingsState.settings.isOnboarded {
+        case true:
+            await NavigationAction.setRootPage(new: .app).perform()
+        case false:
+            await NavigationAction.setRootPage(new: .onboarding).perform()
+        }
     }
 }

@@ -9,6 +9,7 @@ class DIContainer {
         utilsModule(container: container)
         persistenceModule(container: container)
         statsModule(container: container)
+        settingsModule(container: container)
 
         return container
     }
@@ -25,4 +26,17 @@ class DIContainer {
 
     }
 
+    private static func settingsModule(container: Container) {
+        container.register(ISettingsService.self) { (resolver: Resolver) -> ISettingsService in
+                    SettingsService(store: UserDefaults.standard)
+                }
+                .inObjectScope(.container)
+
+        container.register(ISettingsSaga.self) { (resolver: Resolver) -> ISettingsSaga in
+                    SettingsSaga(
+                            settingsSvc: resolver.resolve(ISettingsService.self)!
+                    )
+                }
+                .inObjectScope(.container)
+    }
 }

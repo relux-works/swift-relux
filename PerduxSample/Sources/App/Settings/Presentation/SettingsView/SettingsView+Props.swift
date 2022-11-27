@@ -4,6 +4,7 @@ extension SettingsView {
     }
 
     struct Actions {
+        let setNotOnboarded: ()async->()
         let openSampleSheet: ()async->()
     }
 }

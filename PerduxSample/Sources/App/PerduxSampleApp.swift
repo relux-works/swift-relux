@@ -41,18 +41,22 @@ struct PerduxSampleApp: App {
 
         //business states
         appStore.connectState(state: NavigationState())
+        appStore.connectState(state: SettingsState())
 
         //view states
         appStore.connectViewState(state: NavigationViewState(navState: appStore.getState(NavigationState.self)))
+        appStore.connectViewState(state: SettingsViewState(settingsState: appStore.getState(SettingsState.self)))
     }
 
     private func configureRootSaga() {
+        rootSaga.add(saga: F.get(type: ISettingsSaga.self)!)
     }
 
     private func setupAppContext() {
         Task {
             let setupContextTime = await measure {
                 await [
+                    SettingsSideEffect.obtainSettings
                 ].concurrentPerform()
             }
 

@@ -9,8 +9,13 @@ struct SettingsView: View {
     }
 
     private var content: some View {
-        AsyncButton(action: actions.openSampleSheet) {
-            Text("OPEN SAMPLE SHEET")
+        VStack(spacing: 32) {
+            AsyncButton(action: actions.openSampleSheet) {
+                Text("Open Sample Sheet")
+            }
+            AsyncButton(action: actions.setNotOnboarded) {
+                Text("Set NOT onboarded")
+            }
         }
     }
 }

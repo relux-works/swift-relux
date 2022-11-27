@@ -9,4 +9,5 @@ A description of this package.
 - open PerduxSample folder in termingal
 - run ./.xcgen
 
-<img width="725" alt="CleanShot 2022-11-27 at 18 59 44@2x" src="https://user-images.githubusercontent.com/11797926/204144798-f0751100-7acb-44d7-b7bf-ebe1154021db.png">
+## Architecture diagram
+<img width="634" alt="redux-architecture" src="https://user-images.githubusercontent.com/11797926/204153109-1bc9a581-48aa-4bdd-a718-f6bdbac3e665.png">

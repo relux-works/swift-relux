@@ -27,7 +27,7 @@ public class PerduxStore: ActionDispatcherSubscriber {
         viewStates[state.key] = state
     }
 
-    func notify(_ action: PerduxAction) async {
+	public func notify(_ action: PerduxAction) async {
         await states
                 .concurrentForEach { pair in
                     await pair.value.reduce(with: action)

@@ -2,7 +2,10 @@ import Foundation
 // John Sundell (c)
 // https://github.com/JohnSundell/CollectionConcurrencyKit/blob/main/Sources/CollectionConcurrencyKit.swift
 
+
 internal extension Sequence {
+	
+	@inlinable @inline(__always)
     func asyncForEach(
             _ operation: (Element) async throws -> Void
     ) async rethrows {
@@ -11,6 +14,8 @@ internal extension Sequence {
         }
     }
 
+	
+	@inlinable @inline(__always)
     func concurrentForEach(
             withPriority priority: TaskPriority? = nil,
             _ operation: @escaping (Element) async -> Void
@@ -26,6 +31,8 @@ internal extension Sequence {
 }
 
 internal extension Sequence {
+	
+	@inline(__always)
     func asyncMap<T>(
             _ transform: (Element) async throws -> T
     ) async rethrows -> [T] {
@@ -37,7 +44,9 @@ internal extension Sequence {
 
         return values
     }
-
+	
+	
+	@inline(__always)
     func concurrentMap<T>(
             withPriority priority: TaskPriority? = nil,
             _ transform: @escaping (Element) async -> T
@@ -53,6 +62,8 @@ internal extension Sequence {
         }
     }
 
+	
+	@inline(__always)
     func concurrentMap<T>(
             withPriority priority: TaskPriority? = nil,
             _ transform: @escaping (Element) async throws -> T
@@ -70,6 +81,8 @@ internal extension Sequence {
 }
 
 internal extension Sequence {
+	
+	@inline(__always)
     func asyncCompactMap<T>(
             _ transform: (Element) async throws -> T?
     ) async rethrows -> [T] {
@@ -86,6 +99,8 @@ internal extension Sequence {
         return values
     }
 
+	
+	@inline(__always)
     func concurrentCompactMap<T>(
             withPriority priority: TaskPriority? = nil,
             _ transform: @escaping (Element) async -> T?
@@ -101,6 +116,8 @@ internal extension Sequence {
         }
     }
 
+	
+	@inline(__always)
     func concurrentCompactMap<T>(
             withPriority priority: TaskPriority? = nil,
             _ transform: @escaping (Element) async throws -> T?
@@ -118,6 +135,9 @@ internal extension Sequence {
 }
 
 internal extension Sequence {
+	
+	
+	@inline(__always)
     func asyncFlatMap<T: Sequence>(
             _ transform: (Element) async throws -> T
     ) async rethrows -> [T.Element] {
@@ -130,6 +150,8 @@ internal extension Sequence {
         return values
     }
 
+	
+	@inline(__always)
     func concurrentFlatMap<T: Sequence>(
             withPriority priority: TaskPriority? = nil,
             _ transform: @escaping (Element) async -> T
@@ -145,6 +167,8 @@ internal extension Sequence {
         }
     }
 
+	
+	@inline(__always)
     func concurrentFlatMap<T: Sequence>(
             withPriority priority: TaskPriority? = nil,
             _ transform: @escaping (Element) async throws -> T

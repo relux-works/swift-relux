@@ -27,3 +27,7 @@ Carthage/Build
 *.framework
 *.xcframework
 .gitrelease
+ *.pbxproj
+*.xcscheme
+*.entitlements
+*.xcodeproj/

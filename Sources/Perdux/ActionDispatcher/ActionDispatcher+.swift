@@ -1,6 +1,6 @@
 
 extension Collection where Element == PerduxAction {
-	public func sequentialPerform(
+	internal func sequentialPerform(
 		fileID: String = #fileID,
 		functionName: String = #function,
 		lineNumber: Int = #line
@@ -8,7 +8,7 @@ extension Collection where Element == PerduxAction {
 		await ActionDispatcher.sequentialPerform(self.map { $0 }, fileID: fileID, functionName: functionName, lineNumber: lineNumber)
 	}
 	
-	public func concurrentPerform(
+	internal func concurrentPerform(
 		fileID: String = #fileID,
 		functionName: String = #function,
 		lineNumber: Int = #line
@@ -16,7 +16,7 @@ extension Collection where Element == PerduxAction {
 		await ActionDispatcher.concurrentPerform(self.map { $0 }, fileID: fileID, functionName: functionName, lineNumber: lineNumber)
 	}
 	
-	public func concurrentPerform(
+	internal func concurrentPerform(
 		delay: Double,
 		fileID: String = #fileID,
 		functionName: String = #function,
@@ -27,7 +27,7 @@ extension Collection where Element == PerduxAction {
 }
 
 extension PerduxAction {
-	public func perform(
+	internal func perform(
 		fileID: String = #fileID,
 		functionName: String = #function,
 		lineNumber: Int = #line
@@ -35,7 +35,7 @@ extension PerduxAction {
 		await ActionDispatcher.emitAsync(self, fileID: fileID, functionName: functionName, lineNumber: lineNumber)
 	}
 	
-	public func delayedPerform(
+	internal func delayedPerform(
 		delay: Double,
 		fileID: String = #fileID,
 		functionName: String = #function,

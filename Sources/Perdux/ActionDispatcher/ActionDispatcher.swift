@@ -23,8 +23,8 @@ public final class ActionDispatcher {
 
 
 	
-	@inlinable @inline(__always)
-    public class func emitAsync(
+	@usableFromInline @inline(__always)
+	internal class func emitAsync(
             _ action: PerduxAction,
             delay: Seconds? = nil,
             fileID: String = #fileID,
@@ -43,8 +43,8 @@ public final class ActionDispatcher {
     }
 
 	
-	@inlinable @inline(__always)
-    public class func sequentialPerform(
+	@usableFromInline @inline(__always)
+	internal class func sequentialPerform(
             _ actions: [PerduxAction],
 			delay: Seconds? = nil,
             fileID: String = #fileID,
@@ -66,8 +66,8 @@ public final class ActionDispatcher {
     }
 
 	
-	@inlinable @inline(__always)
-    public class func concurrentPerform(
+	@usableFromInline @inline(__always)
+	internal class func concurrentPerform(
             _ actions: [PerduxAction],
             delay: Seconds? = nil,
             fileID: String = #fileID,

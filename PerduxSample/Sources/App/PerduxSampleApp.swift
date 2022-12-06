@@ -55,9 +55,9 @@ struct PerduxSampleApp: App {
     private func setupAppContext() {
         Task {
             let setupContextTime = await measure {
-                await [
-                    SettingsSideEffect.obtainSettings
-                ].concurrentPerform()
+				await action {
+					SettingsSideEffect.obtainSettings
+				}
             }
 
             log("App setup context took \(setupContextTime)", category: .performance)

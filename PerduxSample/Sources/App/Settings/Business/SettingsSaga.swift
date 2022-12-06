@@ -24,19 +24,27 @@ class SettingsSaga: ISettingsSaga {
         let res = settingsSvc.getSettings()
         switch settingsSvc.getSettings() {
         case let .success(settings):
-            await SettingsAction.obtainSettingsSuccess(settings: settings).perform()
-        case let .failure(err):
-            await SettingsAction.obtainSettingsFail.perform()
+				await action {
+					SettingsAction.obtainSettingsSuccess(settings: settings)
+				}
+        case .failure:
+				await action {
+					SettingsAction.obtainSettingsFail
+				}
         }
     }
 
     private func upsertSettings(new settings: Settings) async {
-        switch settingsSvc.upsertSettings(new: settings) {
-        case .success:
-            await SettingsAction.upsertSettingsSuccess(newSettings: settings)
-        case let .failure(err):
-            log(err)
-            await SettingsAction.upsertSettingsFail
-        }
+		switch settingsSvc.upsertSettings(new: settings) {
+		case .success:
+			await action {
+				SettingsAction.upsertSettingsSuccess(newSettings: settings)
+			}
+		case let .failure(err):
+			log(err)
+			await action {
+				SettingsAction.upsertSettingsFail
+			}
+		}
     }
 }

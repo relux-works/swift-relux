@@ -19,9 +19,13 @@ struct SplashContainer: View {
     private func next() async {
         switch settingsState.settings.isOnboarded {
         case true:
-            await NavigationAction.setRootPage(new: .app).perform()
+			await action {
+				NavigationAction.setRootPage(new: .app)
+			}
         case false:
-            await NavigationAction.setRootPage(new: .onboarding).perform()
+			await action {
+				NavigationAction.setRootPage(new: .onboarding)
+			}
         }
     }
 }

@@ -199,17 +199,13 @@
     "local-darwin-perdux": {
       "path": "../"
     },
-    "remote-darwin-foundationplus": {
-      "url": "git@github.com:ivalx1s/darwin-foundationplus.git",
-      "version": "0.6.0"
-    },
-    "remote-stocksapi": {
-      "url": "https://github.com/alfianlosari/XCAStocksAPI.git",
-      "branch": "main"
-    },
     "remote-apiFetcher": {
       "url": "https://github.com/kean/Get.git",
       "version": "2.1.5"
+    },
+    "remote-darwin-foundationplus": {
+      "url": "git@github.com:ivalx1s/darwin-foundationplus.git",
+      "version": "0.6.0"
     },
     "remote-darwin-logger": {
       "url": "git@github.com:ivalx1s/darwin-logger.git",
@@ -217,7 +213,11 @@
     },
     "remote-darwin-perdux": {
       "url": "git@github.com:darwell-inc/darwin-perdux.git",
-      "version": "2.1.2"
+      "version": "3.0.0"
+    },
+    "remote-stocksapi": {
+      "url": "https://github.com/alfianlosari/XCAStocksAPI.git",
+      "branch": "main"
     },
     "remote-swift-algorithms": {
       "url": "https://github.com/apple/swift-algorithms.git",

@@ -18,16 +18,18 @@ struct SettingsContainer: View {
     }
 
     private func setNotOnboarded() async {
-        await [
-            SettingsSideEffect.upsertSettings(
-                    newSettings: settingsState.settings.apply(onboarded: false)
-            ),
-            NavigationAction.setRootPage(new: .onboarding),
-            NavigationAction.setAppPage(new: .stocksChart),
-        ].sequentialPerform()
+		await action {
+			SettingsSideEffect.upsertSettings(
+				newSettings: settingsState.settings.apply(onboarded: false)
+			)
+			NavigationAction.setRootPage(new: .onboarding)
+			NavigationAction.setAppPage(new: .stocksChart)
+		}
     }
 
     private func openSampleSheet() async {
-        await NavigationAction.setModalSheet(new: .sampleSheet).perform()
+		await action {
+			NavigationAction.setModalSheet(new: .sampleSheet)
+		}
     }
 }

@@ -17,11 +17,11 @@ struct OnboardingContainer: View {
     }
 
     private func completeOnboarding() async {
-        await [
-            NavigationAction.setRootPage(new: .app),
-            SettingsSideEffect.upsertSettings(
-                newSettings: settingsState.settings.apply(onboarded: true)
-            ),
-        ].concurrentPerform()
+		await actions(.concurrently) {
+			NavigationAction.setRootPage(new: .app)
+			SettingsSideEffect.upsertSettings(
+				newSettings: settingsState.settings.apply(onboarded: true)
+			)
+		}
     }
 }

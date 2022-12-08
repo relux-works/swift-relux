@@ -23,40 +23,40 @@ public final class ActionDispatcher {
 
 
 	
-	@usableFromInline @inline(__always)
-	internal class func emitAsync(
+    @usableFromInline @inline(__always)
+    internal class func emitAsync(
             _ action: PerduxAction,
             delay: Seconds? = nil,
             fileID: String = #fileID,
             functionName: String = #function,
             lineNumber: Int = #line
     ) async {
-		
-		if let delay {
-			let delay = UInt64(delay * 1_000_000_000)
-			try? await Task<Never, Never>.sleep(nanoseconds: delay)
-		}
-		
+
+        if let delay {
+            let delay = UInt64(delay * 1_000_000_000)
+            try? await Task<Never, Never>.sleep(nanoseconds: delay)
+        }
+
         log(action, fileID: fileID, functionName: functionName, lineNumber: lineNumber)
         await subscribers
                 .concurrentForEach { await $0.observer?.notify(action) }
     }
 
 	
-	@usableFromInline @inline(__always)
-	internal class func sequentialPerform(
+    @usableFromInline @inline(__always)
+    internal class func sequentialPerform(
             _ actions: [PerduxAction],
-			delay: Seconds? = nil,
+            delay: Seconds? = nil,
             fileID: String = #fileID,
             functionName: String = #function,
             lineNumber: Int = #line
     ) async {
-		
-		if let delay {
-			let delay = UInt64(delay * 1_000_000_000)
-			try? await Task<Never, Never>.sleep(nanoseconds: delay)
-		}
-		
+
+        if let delay {
+            let delay = UInt64(delay * 1_000_000_000)
+            try? await Task<Never, Never>.sleep(nanoseconds: delay)
+        }
+
         await actions
                 .asyncForEach { action in
                     log(action, fileID: fileID, functionName: functionName, lineNumber: lineNumber)
@@ -66,21 +66,21 @@ public final class ActionDispatcher {
     }
 
 	
-	@usableFromInline @inline(__always)
-	internal class func concurrentPerform(
+    @usableFromInline @inline(__always)
+    internal class func concurrentPerform(
             _ actions: [PerduxAction],
             delay: Seconds? = nil,
             fileID: String = #fileID,
             functionName: String = #function,
             lineNumber: Int = #line
     ) async {
-		
-		if let delay {
-			let delay = UInt64(delay * 1_000_000_000)
-			try? await Task<Never, Never>.sleep(nanoseconds: delay)
-		}
 
-		await actions
+        if let delay {
+            let delay = UInt64(delay * 1_000_000_000)
+            try? await Task<Never, Never>.sleep(nanoseconds: delay)
+        }
+
+        await actions
                 .concurrentForEach { action in
                 log(action, fileID: fileID, functionName: functionName, lineNumber: lineNumber)
                 await subscribers

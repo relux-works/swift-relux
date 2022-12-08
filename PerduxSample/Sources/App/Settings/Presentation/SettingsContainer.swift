@@ -18,7 +18,7 @@ struct SettingsContainer: View {
     }
 
     private func setNotOnboarded() async {
-		await action {
+		await actions {
 			SettingsSideEffect.upsertSettings(
 				newSettings: settingsState.settings.apply(onboarded: false)
 			)

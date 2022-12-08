@@ -213,7 +213,7 @@
     },
     "remote-darwin-perdux": {
       "url": "git@github.com:darwell-inc/darwin-perdux.git",
-      "version": "3.0.0"
+      "version": "3.1.0"
     },
     "remote-stocksapi": {
       "url": "https://github.com/alfianlosari/XCAStocksAPI.git",

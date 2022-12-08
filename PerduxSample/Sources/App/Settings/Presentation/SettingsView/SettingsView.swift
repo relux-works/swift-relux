@@ -75,7 +75,6 @@ struct SettingsDetails4: View {
             ) {
                 Text("Change onboarding")
             }
-            Text("Max depth")
         }
     }
 

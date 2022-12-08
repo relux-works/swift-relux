@@ -8,13 +8,15 @@ struct SettingsContainer: View {
     }
 
     private var content: some View {
-        SettingsView(
-                props: .init(),
-                actions: .init(
-                        setNotOnboarded: setNotOnboarded,
-                        openSampleSheet: openSampleSheet
-                )
-        )
+        NavigationView {
+            SettingsView(
+                    props: .init(),
+                    actions: .init(
+                            setNotOnboarded: setNotOnboarded,
+                            openSampleSheet: openSampleSheet
+                    )
+            )
+        }
     }
 
     private func setNotOnboarded() async {

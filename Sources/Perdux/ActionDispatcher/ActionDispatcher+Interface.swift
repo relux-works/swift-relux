@@ -1,22 +1,8 @@
 import Logger
 
-@resultBuilder
-public struct PerduxActionCompositionBuilder {
-	public static func buildBlock() -> [PerduxAction] { [] }
-	
-	public static func buildBlock(_ actions: PerduxAction...) -> [PerduxAction] {
-		actions
-	}
-}
-
-public enum ExecutionType {
-	case serially
-	case concurrently
-}
-
 @inlinable
 public func actions(
-		_ executionType: ExecutionType = .serially,
+		_ executionType: ActionDispatcher.ExecutionType = .serially,
 		delay: Seconds? = nil,
 		fileID: String = #fileID,
 		functionName: String = #function,
@@ -56,7 +42,7 @@ public func action(
 
 @inlinable
 public func performAsync(
-		_ executionType: ExecutionType = .serially,
+		_ executionType: ActionDispatcher.ExecutionType = .serially,
 		withPriority taskPriority: TaskPriority? = nil,
 		delay: Seconds? = nil,
 		fileID: String = #fileID,
@@ -74,7 +60,7 @@ public func performAsync(
 
 @usableFromInline @inline(__always)
 internal func _actions(
-		_ executionType: ExecutionType = .serially,
+		_ executionType: ActionDispatcher.ExecutionType = .serially,
 		delay: Seconds? = nil,
 		fileID: String = #fileID,
 		functionName: String = #function,

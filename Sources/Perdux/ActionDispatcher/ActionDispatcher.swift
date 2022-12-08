@@ -8,12 +8,6 @@ public protocol ActionDispatcherSubscriber: AnyObject {
     func notify(_ action: PerduxAction) async
 }
 
-extension ActionDispatcher {
-    public struct AnyObserver {
-        public private(set) weak var observer: ActionDispatcherSubscriber?
-    }
-}
-
 public final class ActionDispatcher {
     public private(set) static var subscribers: [AnyObserver] = []
 
@@ -21,8 +15,6 @@ public final class ActionDispatcher {
         subscribers.append(.init(observer: subscriber))
     }
 
-
-	
     @usableFromInline @inline(__always)
     internal class func emitAsync(
             _ action: PerduxAction,

@@ -31,3 +31,4 @@ Carthage/Build
 *.xcscheme
 *.entitlements
 *.xcodeproj/
+gitrelease

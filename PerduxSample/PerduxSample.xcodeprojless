@@ -35,6 +35,10 @@
       },
       "dependencies": [
         {
+          "package": "remote-swiftui-plus",
+          "product": "SwiftUIPlus"
+        },
+        {
           "package": "remote-stocksapi",
           "product": "XCAStocksAPI"
         },
@@ -234,6 +238,10 @@
     "remote-swift-stdlibplus": {
       "url": "git@github.com:ivalx1s/swift-stdlibplus.git",
       "version": "0.4.0"
+    },
+    "remote-swiftui-plus": {
+      "url": "git@github.com:ivalx1s/swiftui-plus.git",
+      "version": "0.0.4"
     },
     "remote-Swinject": {
       "version": "2.8.1",

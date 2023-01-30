@@ -7,9 +7,10 @@ public func actions(
 		fileID: String = #fileID,
 		functionName: String = #function,
 		lineNumber: Int = #line,
-		@PerduxActionCompositionBuilder actions: () -> [PerduxAction],
+		@PerduxActionCompositionBuilder @_inheritActorContext actions: @Sendable () async -> [PerduxAction],
 		label: (() -> String)? = nil
 ) async {
+	let actions = await actions()
 	await _actions(
 			executionType,
 			delay: delay,
@@ -27,9 +28,10 @@ public func action(
 		fileID: String = #fileID,
 		functionName: String = #function,
 		lineNumber: Int = #line,
-		@PerduxActionCompositionBuilder action: () -> PerduxAction,
+		@PerduxActionCompositionBuilder @_inheritActorContext action: @Sendable () async -> PerduxAction,
 		label: (() -> String)? = nil
 ) async {
+	let action = await action()
 	await _action(
 			delay: delay,
 			fileID: fileID,
@@ -48,11 +50,11 @@ public func performAsync(
 		fileID: String = #fileID,
 		functionName: String = #function,
 		lineNumber: Int = #line,
-		@PerduxActionCompositionBuilder actions: @escaping () -> [PerduxAction],
+		@PerduxActionCompositionBuilder @_inheritActorContext actions: @escaping @Sendable () async -> [PerduxAction],
 		label: (() -> String)? = nil
 ) {
-
 	Task(priority: taskPriority) {
+		let actions = await actions()
 		await _actions(executionType, delay: delay, fileID: fileID, functionName: functionName, lineNumber: lineNumber, actions: actions, label: label)
 	}
 }
@@ -65,11 +67,11 @@ public func performAsync(
 	fileID: String = #fileID,
 	functionName: String = #function,
 	lineNumber: Int = #line,
-	@PerduxActionCompositionBuilder action: @escaping () -> PerduxAction,
+	@PerduxActionCompositionBuilder @_inheritActorContext action: @escaping @Sendable () async -> PerduxAction,
 	label: (() -> String)? = nil
 ) {
-	
 	Task(priority: taskPriority) {
+		let action = await action()
 		await _action(executionType, delay: delay, fileID: fileID, functionName: functionName, lineNumber: lineNumber, action: action, label: label)
 	}
 }
@@ -82,15 +84,15 @@ internal func _actions(
 		fileID: String = #fileID,
 		functionName: String = #function,
 		lineNumber: Int = #line,
-		@PerduxActionCompositionBuilder actions: () -> [PerduxAction],
+		actions: [PerduxAction],
 		label: (() -> String)? = nil
 ) async {
 	let execStartTime = timestamp.milliseconds
 	switch executionType {
 	case .serially:
-		await ActionDispatcher.sequentialPerform(actions(), delay: delay, fileID: fileID, functionName: functionName, lineNumber: lineNumber)
+		await ActionDispatcher.sequentialPerform(actions, delay: delay, fileID: fileID, functionName: functionName, lineNumber: lineNumber)
 	case .concurrently:
-		await ActionDispatcher.concurrentPerform(actions(), delay: delay, fileID: fileID, functionName: functionName, lineNumber: lineNumber)
+		await ActionDispatcher.concurrentPerform(actions, delay: delay, fileID: fileID, functionName: functionName, lineNumber: lineNumber)
 	}
 	let execDurationMillis = timestamp.milliseconds - execStartTime
 
@@ -110,15 +112,15 @@ internal func _action(
 	fileID: String = #fileID,
 	functionName: String = #function,
 	lineNumber: Int = #line,
-	@PerduxActionCompositionBuilder action: () -> PerduxAction,
+	action: PerduxAction,
 	label: (() -> String)? = nil
 ) async {
 	let execStartTime = timestamp.milliseconds
 	switch executionType {
 		case .serially:
-			await ActionDispatcher.sequentialPerform([action()], delay: delay, fileID: fileID, functionName: functionName, lineNumber: lineNumber)
+			await ActionDispatcher.sequentialPerform([action], delay: delay, fileID: fileID, functionName: functionName, lineNumber: lineNumber)
 		case .concurrently:
-			await ActionDispatcher.concurrentPerform([action()], delay: delay, fileID: fileID, functionName: functionName, lineNumber: lineNumber)
+			await ActionDispatcher.concurrentPerform([action], delay: delay, fileID: fileID, functionName: functionName, lineNumber: lineNumber)
 	}
 	let execDurationMillis = timestamp.milliseconds - execStartTime
 	

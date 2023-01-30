@@ -1,5 +1,5 @@
 import Foundation
 import Logger
 
-public protocol PerduxAction: EnumReflectable {
+public protocol PerduxAction: EnumReflectable, Sendable {
 }

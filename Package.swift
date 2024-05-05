@@ -18,7 +18,7 @@ let package = Package(
         ),
     ],
     dependencies:      [
-        .package(url: "git@gitlab.services.mts.ru:neolink-ios/packages/darwin-logger.git", from: "0.5.1"),
+        .package(url: "git@github.com:ivalx1s/darwin-logger.git", from: "0.5.2"),
     ],
     targets: [
         .target(

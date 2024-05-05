@@ -98,9 +98,20 @@ internal func _actions(
 
 	if let label {
 		if let delay {
-			log("\(label()); \(execDurationMillis)ms, including delay \(delay*1000)ms; raw execution duration: \(execDurationMillis - Int(delay*1000))ms", category: .performance)
+			log("\(label()); \(execDurationMillis)ms, including delay \(delay*1000)ms; raw execution duration: \(execDurationMillis - Int(delay*1000))ms",
+				category: .performance,
+				fileID: fileID,
+				functionName: functionName,
+				lineNumber: lineNumber
+			)
 		} else {
-			log("\(label()); \(execDurationMillis)ms", category: .performance)
+			log(
+				"\(label()); \(execDurationMillis)ms",
+				category: .performance,
+				fileID: fileID,
+				functionName: functionName,
+				lineNumber: lineNumber
+			)
 		}
 	}
 }
@@ -126,9 +137,20 @@ internal func _action(
 	
 	if let label {
 		if let delay {
-			log("\(label()); \(execDurationMillis)ms, including delay \(delay*1000)ms; raw execution duration: \(execDurationMillis - Int(delay*1000))ms", category: .performance)
+			log("\(label()); \(execDurationMillis)ms, including delay \(delay*1000)ms; raw execution duration: \(execDurationMillis - Int(delay*1000))ms",
+				category: .performance,
+				fileID: fileID,
+				functionName: functionName,
+				lineNumber: lineNumber
+			)
 		} else {
-			log("\(label()); \(execDurationMillis)ms", category: .performance)
+			log(
+				"\(label()); \(execDurationMillis)ms",
+				category: .performance,
+				fileID: fileID,
+				functionName: functionName,
+				lineNumber: lineNumber
+			)
 		}
 	}
 }

@@ -3,7 +3,7 @@
 import PackageDescription
 
 let package = Package(
-    name: "darwin-perdux",
+    name: "darwin-relux",
     platforms: [
         .iOS(.v14),
         .macOS(.v11),
@@ -13,32 +13,20 @@ let package = Package(
     ],
     products: [
         .library(
-            name: "Perdux",
-            type: .dynamic,
-            targets: ["Perdux"]
+            name: "Relux",
+            targets: ["Relux"]
         ),
     ],
-    dependencies: Package.remoteDependencies,
+    dependencies:      [
+        .package(url: "git@gitlab.services.mts.ru:neolink-ios/packages/darwin-logger.git", from: "0.5.1"),
+    ],
     targets: [
         .target(
-            name: "Perdux",
-            dependencies: Package.perduxDependencies
+            name: "Relux",
+            dependencies:  [
+                .product(name: "Logger", package: "darwin-logger"),
+            ],
+            path: "Sources"
         ),
     ]
 )
-
-
-// MARK: -- Dependencies
-extension Package {
-    static var remoteDependencies: [Package.Dependency] {
-        [
-			.package(url: "git@github.com:ivalx1s/darwin-logger.git", from: "0.5.0"),
-        ]
-    }
-
-    static var perduxDependencies: [Target.Dependency] {
-        [
-            .product(name: "Logger", package: "darwin-logger"),
-        ]
-    }
-}

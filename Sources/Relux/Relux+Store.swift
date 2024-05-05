@@ -70,10 +70,5 @@ extension Relux {
             let state = viewStates[T.key]
             return state as! T
         }
-
-        deinit {
-            log("deinit")
-        }
     }
-
 }

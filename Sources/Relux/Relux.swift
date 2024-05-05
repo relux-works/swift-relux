@@ -4,17 +4,9 @@ public final class Relux {
     public let appStore: Store
     public let rootSaga: RootSaga
 
-    public static var shared: Relux?
-
-    public static func initialize(appStore: Store, rootSaga: RootSaga) -> Relux {
-        let relux: Relux = .init(appStore: appStore, rootSaga: rootSaga)
-        self.shared = relux
-        return relux
-    }
-
-    private init(
-        appStore: Store,
-        rootSaga: RootSaga
+    public init(
+        appStore: Store = .init(),
+        rootSaga: RootSaga = .init()
     ) {
         self.appStore = appStore
         self.rootSaga = rootSaga

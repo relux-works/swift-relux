@@ -18,7 +18,7 @@ let package = Package(
         ),
     ],
     dependencies:      [
-        .package(url: "git@github.com:ivalx1s/darwin-logger.git", from: "0.5.2"),
+        .package(url: "https://github.com/ivalx1s/darwin-logger.git", from: "0.5.2"),
     ],
     targets: [
         .target(

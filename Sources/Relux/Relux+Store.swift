@@ -23,8 +23,8 @@ struct ReluxTemporalStateRef {
 
 extension Relux {
     open class Store: ADSubscriber {
-        private(set) var states: [ObjectIdentifier: any ReluxState] = [:]
-        private(set) var viewStates: [ObjectIdentifier: any ReluxViewState] = [:]
+        public private(set) var states: [ObjectIdentifier: any ReluxState] = [:]
+        public private(set) var viewStates: [ObjectIdentifier: any ReluxViewState] = [:]
         private(set) var tempStates: [ObjectIdentifier: ReluxTemporalStateRef] = [:]
 
         public init() {

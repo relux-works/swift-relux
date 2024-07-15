@@ -17,6 +17,8 @@ public final class Relux {
 			.forEach { appStore.connectState(state: $0) }
 		module.viewStates
 			.forEach { appStore.connectViewState(state: $0) }
+		module.viewStatesObservables
+			.forEach { appStore.connectViewStateObservable(state: $0) }
 		module.sagas
 			.forEach { rootSaga.add(saga: $0) }
 		
@@ -29,6 +31,7 @@ public extension Relux {
 	protocol Module {
 		var states: [ReluxState] { get }
 		var viewStates: [any ReluxViewState] { get }
+		var viewStatesObservables: [any ReluxViewStateObserving] { get }
 		var sagas: [ReluxSaga] { get }
 	}
 }

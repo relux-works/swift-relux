@@ -102,5 +102,10 @@ extension Relux {
 			let state = viewStates[T.key]
 			return state as! T
 		}
+		
+		public func getViewState<T: ReluxViewStateObserving>(_ type: T.Type) -> T {
+			let state = viewStatesObservables[T.key]
+			return state as! T
+		}
 	}
 }

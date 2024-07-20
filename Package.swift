@@ -1,4 +1,4 @@
-// swift-tools-version: 5.6
+// swift-tools-version: 5.9
 
 import PackageDescription
 
@@ -17,7 +17,7 @@ let package = Package(
             targets: ["Relux"]
         ),
     ],
-    dependencies:      [
+    dependencies: [
         .package(url: "https://github.com/ivalx1s/darwin-logger.git", from: "0.5.2"),
     ],
     targets: [

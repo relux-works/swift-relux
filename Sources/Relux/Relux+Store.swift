@@ -20,12 +20,12 @@ struct ReluxTemporalStateRef {
     weak var objectRef: (any ReluxTemporalState)?
 }
 
-
 extension Relux {
     open class Store: ADSubscriber {
         public private(set) var states: [ObjectIdentifier: any ReluxState] = [:]
         public private(set) var viewStates: [ObjectIdentifier: any ReluxViewState] = [:]
         private(set) var tempStates: [ObjectIdentifier: ReluxTemporalStateRef] = [:]
+        private(set) var router: (any Relux.Navigation.RouterProtocol)?
 
         public init() {
             AD.connect(self)
@@ -44,6 +44,11 @@ extension Relux {
             viewStates[state.key] = state
         }
 
+        public func connectRouter(_ router: any Relux.Navigation.RouterProtocol) {
+            self.router = router
+        }
+
+        @discardableResult
         public func connect<TS: ReluxTemporalState>(state: TS) -> TS {
             tempStates[state.key] = .init(objectRef: state)
             return state
@@ -59,6 +64,8 @@ extension Relux {
                 .concurrentForEach { pair in
                     await pair.value.objectRef?.reduce(with: action)
                 }
+
+            await router?.reduce(with: action)
         }
 
         public func getState<T: ReluxState>(_ type: T.Type) -> T {

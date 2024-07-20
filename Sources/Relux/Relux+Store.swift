@@ -25,7 +25,7 @@ extension Relux {
         public private(set) var states: [ObjectIdentifier: any ReluxState] = [:]
         public private(set) var viewStates: [ObjectIdentifier: any ReluxViewState] = [:]
         private(set) var tempStates: [ObjectIdentifier: ReluxTemporalStateRef] = [:]
-        private(set) var router: (any Relux.Navigation.RouterProtocol)?
+        public private(set) var router: (any Relux.Navigation.RouterProtocol)?
 
         public init() {
             AD.connect(self)

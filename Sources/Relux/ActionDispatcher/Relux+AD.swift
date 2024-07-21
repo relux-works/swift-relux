@@ -4,7 +4,7 @@ import Logger
 
 public typealias Seconds = Double
 
-public protocol ADSubscriber: AnyObject {
+public protocol ADSubscriber: Actor {
     func notify(_ action: ReluxAction) async
 }
 

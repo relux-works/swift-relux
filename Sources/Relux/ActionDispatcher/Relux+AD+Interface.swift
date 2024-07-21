@@ -7,7 +7,7 @@ public func actions(
 	fileID: String = #fileID,
 	functionName: String = #function,
 	lineNumber: Int = #line,
-	@Relux.ActionBuilder actions: @Sendable () -> [ReluxAction],
+	@Relux.ActionsBuilder actions: @Sendable () -> [ReluxAction],
 	label: (@Sendable () -> String)? = nil
 ) async {
 	await _actions(
@@ -48,7 +48,7 @@ public func performAsync(
 	fileID: String = #fileID,
 	functionName: String = #function,
 	lineNumber: Int = #line,
-	@Relux.ActionBuilder actions: @Sendable @escaping () -> [ReluxAction],
+	@Relux.ActionsBuilder actions: @Sendable @escaping () -> [ReluxAction],
 	label: (@Sendable () -> String)? = nil
 ) {
 	
@@ -65,7 +65,7 @@ internal func _actions(
 	fileID: String = #fileID,
 	functionName: String = #function,
 	lineNumber: Int = #line,
-	@Relux.ActionBuilder actions: @Sendable () -> [ReluxAction],
+	@Relux.ActionsBuilder actions: @Sendable () -> [ReluxAction],
 	label: (@Sendable () -> String)? = nil
 ) async {
 	let execStartTime = timestamp.milliseconds

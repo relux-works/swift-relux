@@ -1,6 +1,5 @@
 
-@MainActor
-public final class Relux {
+public actor Relux {
 	public let appStore: Store
 	public let rootSaga: RootSaga
 	
@@ -12,26 +11,46 @@ public final class Relux {
 		self.rootSaga = rootSaga
 	}
 	
-	public func register(_ module: Module) -> Relux {
-		module.states
-			.forEach { appStore.connectState(state: $0) }
-		module.viewStates
-			.forEach { appStore.connectViewState(state: $0) }
-		module.viewStatesObservables
-			.forEach { appStore.connectViewStateObservable(state: $0) }
-		module.sagas
-			.forEach { rootSaga.add(saga: $0) }
+	@discardableResult
+	public func register(_ module: Module) async -> Relux {
+		await module.states
+			.asyncForEach { await appStore.connectState(state: $0) }
+		await module.viewStates
+			.asyncForEach { await appStore.connectViewState(state: $0) }
+		await module.viewStatesObservables
+			.asyncForEach { await appStore.connectViewStateObservable(state: $0) }
+		await module.sagas
+			.asyncForEach { await rootSaga.add(saga: $0) }
 		
+		return self
+	}
+	
+	public func register(_ modules: [Module]) async -> Relux {
+		for module in modules {
+			await register(module)
+		}
 		return self
 	}
 }
 
 public extension Relux {
-	@MainActor
-	protocol Module {
+
+	protocol Module: Sendable {
 		var states: [ReluxState] { get }
 		var viewStates: [any ReluxViewState] { get }
 		var viewStatesObservables: [any ReluxViewStateObserving] { get }
 		var sagas: [ReluxSaga] { get }
+	}
+}
+
+
+extension Relux {
+	@resultBuilder
+	public struct ModulesBuilder {
+		public static func buildBlock() -> [any Module] { [] }
+		
+		public static func buildBlock(_ modules: any Module...) -> [any Module] {
+			modules
+		}
 	}
 }

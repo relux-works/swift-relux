@@ -2,6 +2,8 @@ import Foundation
 import Logger
 import SwiftUI
 
+
+
 extension ReluxState {
 	var key: ObjectIdentifier { .init(type(of: self)) }
 	static var key: ObjectIdentifier { .init(self) }
@@ -41,7 +43,7 @@ struct ReluxTemporalStateObservingRef {
 
 
 extension Relux {
-	open class Store: ADSubscriber {
+	public actor Store: ADSubscriber, Sendable {
 		public private(set) var states: [ObjectIdentifier: any ReluxState] = [:]
 		public private(set) var viewStates: [ObjectIdentifier: any ReluxViewState] = [:]
 		public private(set) var viewStatesObservables: [ObjectIdentifier: any ReluxViewStateObserving] = [:]
@@ -59,8 +61,8 @@ extension Relux {
 				.concurrentForEach { await $0.value.cleanup() }
 		}
 		
-		public func connectState(state: any ReluxState) {
-			states[state.key] = state
+		public func connectState(state: any ReluxState) async {
+			await states[state.key] = state
 		}
 		
 		public func connectViewState(state: any ReluxViewState) {
@@ -71,8 +73,13 @@ extension Relux {
 			viewStatesObservables[state.key] = state
 		}
 		
-		public func connect<TS: ReluxTemporalState>(state: TS) -> TS {
-			tempStates[state.key] = .init(objectRef: state)
+		public func connect<TS: ReluxTemporalState>(state: TS) async -> TS {
+			tempStates[await state.key] = .init(objectRef: state)
+			return state
+		}
+		
+		public func connect<TS: ReluxTemporalStateObserving>(state: TS) async -> TS {
+			tempStatesObserving[await state.key] = .init(objectRef: state)
 			return state
 		}
 		

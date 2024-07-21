@@ -44,13 +44,14 @@ struct ReluxTemporalStateObservingRef {
 
 extension Relux {
 	public actor Store: ADSubscriber, Sendable {
-		public private(set) var states: [ObjectIdentifier: any ReluxState] = [:]
-		public private(set) var viewStates: [ObjectIdentifier: any ReluxViewState] = [:]
-		public private(set) var viewStatesObservables: [ObjectIdentifier: any ReluxViewStateObserving] = [:]
-		private(set) var tempStates: [ObjectIdentifier: ReluxTemporalStateRef] = [:]
-		private(set) var tempStatesObserving: [ObjectIdentifier: ReluxTemporalStateObservingRef] = [:]
 		
+		internal private(set) var states: [ObjectIdentifier: any ReluxState] = [:]
+		internal private(set) var viewStates: [ObjectIdentifier: any ReluxViewState] = [:]
+		internal private(set) var viewStatesObservables: [ObjectIdentifier: any ReluxViewStateObserving] = [:]
+		internal private(set) var tempStates: [ObjectIdentifier: ReluxTemporalStateRef] = [:]
+		internal private(set) var tempStatesObserving: [ObjectIdentifier: ReluxTemporalStateObservingRef] = [:]
 		
+		public private(set) var router: (any Relux.Navigation.RouterProtocol)?
 		
 		public init() {
 			AD.connect(self)
@@ -59,6 +60,10 @@ extension Relux {
 		public func cleanup() async {
 			await states
 				.concurrentForEach { await $0.value.cleanup() }
+		}
+		
+		public func connectRouter(_ router: any Relux.Navigation.RouterProtocol) {
+			self.router = router
 		}
 		
 		public func connectState(state: any ReluxState) async {
@@ -98,6 +103,8 @@ extension Relux {
 				.concurrentForEach { pair in
 					await pair.value.objectRef?.reduce(with: action)
 				}
+			
+			await router?.reduce(with: action)
 		}
 		
 		public func getState<T: ReluxState>(_ type: T.Type) -> T {

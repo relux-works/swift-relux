@@ -1,13 +1,15 @@
 import Logger
 
+
+
 @inlinable
 public func actions(
-	_ executionType: Relux.AD.ExecutionType = .serially,
+	_ executionType: Relux.ExecutionType = .serially,
 	delay: Seconds? = nil,
 	fileID: String = #fileID,
 	functionName: String = #function,
 	lineNumber: Int = #line,
-	@Relux.ActionsBuilder actions: @Sendable () -> [ReluxAction],
+	@Relux.ActionResultBuilder actions: @Sendable () -> [Relux.Action],
 	label: (@Sendable () -> String)? = nil
 ) async {
 	await _actions(
@@ -27,7 +29,7 @@ public func action(
 	fileID: String = #fileID,
 	functionName: String = #function,
 	lineNumber: Int = #line,
-	action: @Sendable () -> ReluxAction,
+	action: @Sendable () -> Relux.Action,
 	label: (@Sendable () -> String)? = nil
 ) async {
 	await _action(
@@ -42,13 +44,13 @@ public func action(
 
 @inlinable
 public func performAsync(
-	_ executionType: Relux.AD.ExecutionType = .serially,
+	_ executionType: Relux.ExecutionType = .serially,
 	withPriority taskPriority: TaskPriority? = nil,
 	delay: Seconds? = nil,
 	fileID: String = #fileID,
 	functionName: String = #function,
 	lineNumber: Int = #line,
-	@Relux.ActionsBuilder actions: @Sendable @escaping () -> [ReluxAction],
+	@Relux.ActionResultBuilder actions: @Sendable @escaping () -> [Relux.Action],
 	label: (@Sendable () -> String)? = nil
 ) {
 	
@@ -60,20 +62,20 @@ public func performAsync(
 
 @usableFromInline @inline(__always)
 internal func _actions(
-	_ executionType: Relux.AD.ExecutionType = .serially,
+	_ executionType: Relux.ExecutionType = .serially,
 	delay: Seconds? = nil,
 	fileID: String = #fileID,
 	functionName: String = #function,
 	lineNumber: Int = #line,
-	@Relux.ActionsBuilder actions: @Sendable () -> [ReluxAction],
+	@Relux.ActionResultBuilder actions: @Sendable () -> [Relux.Action],
 	label: (@Sendable () -> String)? = nil
 ) async {
 	let execStartTime = timestamp.milliseconds
 	switch executionType {
 		case .serially:
-			await Relux.AD.sequentialPerform(actions(), delay: delay, fileID: fileID, functionName: functionName, lineNumber: lineNumber)
+			await Relux.Dispatcher.sequentialPerform(actions(), delay: delay, fileID: fileID, functionName: functionName, lineNumber: lineNumber)
 		case .concurrently:
-			await Relux.AD.concurrentPerform(actions(), delay: delay, fileID: fileID, functionName: functionName, lineNumber: lineNumber)
+			await Relux.Dispatcher.concurrentPerform(actions(), delay: delay, fileID: fileID, functionName: functionName, lineNumber: lineNumber)
 	}
 	let execDurationMillis = timestamp.milliseconds - execStartTime
 	
@@ -93,11 +95,11 @@ internal func _action(
 	fileID: String = #fileID,
 	functionName: String = #function,
 	lineNumber: Int = #line,
-	action: @Sendable () -> ReluxAction,
+	action: @Sendable () -> Relux.Action,
 	label: (@Sendable () -> String)? = nil
 ) async {
 	let execStartTime = timestamp.milliseconds
-	await Relux.AD.emitAsync(action(), delay: delay, fileID: fileID, functionName: functionName, lineNumber: lineNumber)
+	await Relux.Dispatcher.sequentialPerform([action()], delay: delay, fileID: fileID, functionName: functionName, lineNumber: lineNumber)
 	let execDurationMillis = timestamp.milliseconds - execStartTime
 	
 	if let label {

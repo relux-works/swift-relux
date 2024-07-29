@@ -1,4 +1,12 @@
+#if canImport(Darwin)
 import Darwin
+#elseif os(Linux)
+import Glibc
+#elseif os(Windows)
+import ucrt
+#else
+#error("Unsupported platform")
+#endif
 
 @usableFromInline
 struct timestamp {
@@ -10,7 +18,7 @@ struct timestamp {
 		return timespec.tv_sec
 	}
 	
-	@usableFromInline //@inline(__always)
+	@usableFromInline
 	static var milliseconds: Int {
 		var timespec = timespec()
 		timespec_get(&timespec, TIME_UTC)
@@ -25,7 +33,7 @@ struct timestamp {
 	}
 	
 	
-	@usableFromInline// @inline(__always)
+	@usableFromInline
 	static var microseconds: Int {
 		var timespec = timespec()
 		timespec_get(&timespec, TIME_UTC)

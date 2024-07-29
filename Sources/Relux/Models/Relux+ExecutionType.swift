@@ -1,7 +1,7 @@
 import Foundation
 
-extension Relux.AD {
-    public enum ExecutionType {
+extension Relux {
+	public enum ExecutionType: Sendable {
         case serially
         case concurrently
     }

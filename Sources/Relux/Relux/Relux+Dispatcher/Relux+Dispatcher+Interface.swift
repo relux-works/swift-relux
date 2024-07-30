@@ -1,7 +1,3 @@
-import Logger
-
-
-
 @inlinable
 public func actions(
 	_ executionType: Relux.ExecutionType = .serially,
@@ -70,21 +66,11 @@ internal func _actions(
 	@Relux.ActionResultBuilder actions: @Sendable () -> [Relux.Action],
 	label: (@Sendable () -> String)? = nil
 ) async {
-	let execStartTime = timestamp.milliseconds
 	switch executionType {
 		case .serially:
-			await Relux.Dispatcher.sequentialPerform(actions(), delay: delay, fileID: fileID, functionName: functionName, lineNumber: lineNumber)
+			await Relux.Dispatcher.sequentialPerform(actions(), delay: delay, fileID: fileID, functionName: functionName, lineNumber: lineNumber, label: label)
 		case .concurrently:
-			await Relux.Dispatcher.concurrentPerform(actions(), delay: delay, fileID: fileID, functionName: functionName, lineNumber: lineNumber)
-	}
-	let execDurationMillis = timestamp.milliseconds - execStartTime
-	
-	if let label {
-		if let delay {
-			log("\(label()); \(execDurationMillis)ms, including delay \(delay*1000)ms; raw execution duration: \(execDurationMillis - Int(delay*1000))ms", category: .performance)
-		} else {
-			log("\(label()); \(execDurationMillis)ms", category: .performance)
-		}
+			await Relux.Dispatcher.concurrentPerform(actions(), delay: delay, fileID: fileID, functionName: functionName, lineNumber: lineNumber, label: label)
 	}
 }
 
@@ -98,17 +84,7 @@ internal func _action(
 	action: @Sendable () -> Relux.Action,
 	label: (@Sendable () -> String)? = nil
 ) async {
-	let execStartTime = timestamp.milliseconds
 	await Relux.Dispatcher.sequentialPerform([action()], delay: delay, fileID: fileID, functionName: functionName, lineNumber: lineNumber)
-	let execDurationMillis = timestamp.milliseconds - execStartTime
-	
-	if let label {
-		if let delay {
-			log("\(label()); \(execDurationMillis)ms, including delay \(delay*1000)ms; raw execution duration: \(execDurationMillis - Int(delay*1000))ms", category: .performance)
-		} else {
-			log("\(label()); \(execDurationMillis)ms", category: .performance)
-		}
-	}
 }
 
 

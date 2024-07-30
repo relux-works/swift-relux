@@ -17,13 +17,13 @@ let package = Package(
 		),
 	],
 	dependencies:      [
-		.package(url: "https://github.com/ivalx1s/darwin-logger.git", from: "1.0.0"),
+
 	],
 	targets: [
 		.target(
 			name: "Relux",
 			dependencies:  [
-				.product(name: "Logger", package: "darwin-logger"),
+
 			],
 			path: "Sources"
 		),

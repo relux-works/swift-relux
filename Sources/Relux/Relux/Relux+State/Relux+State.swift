@@ -1,6 +1,6 @@
 public extension Relux {
 	protocol State: Actor, AnyObject {
-		func reduce(with action: Relux.Action) async
+		func reduce(with action: any Relux.Action) async
 		
 		func cleanup() async
 	}

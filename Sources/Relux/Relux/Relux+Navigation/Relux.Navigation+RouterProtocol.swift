@@ -2,7 +2,7 @@ public extension Relux.Navigation {
 	protocol RouterProtocol: Sendable {
         associatedtype Page: PathComponent
 		 
-		 func reduce(with action: Relux.Action) async
+		 func reduce(with action: any Relux.Action) async
 		 
 		 func restore() async
     }

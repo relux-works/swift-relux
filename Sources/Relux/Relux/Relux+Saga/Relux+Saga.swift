@@ -1,6 +1,6 @@
 public extension Relux {
 	protocol Saga: Actor {
-		func apply(_ effect: Relux.Effect) async
+		func apply(_ effect: any Relux.Effect) async
 	}
 }
 
@@ -17,7 +17,7 @@ public extension Relux {
             sagas.append(saga)
         }
 
-        public func notify(_ action: Relux.Action) async {
+        public func notify(_ action: any Relux.Action) async {
 			guard let effect = action as? Relux.Effect else {
                 return
             }

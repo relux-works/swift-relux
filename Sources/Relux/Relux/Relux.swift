@@ -1,32 +1,43 @@
-
 @MainActor
 public final class Relux: Sendable {
 	@MainActor public let store: Store
 	@MainActor public let rootSaga: RootSaga
 	
+	
 	public init(
+		logger: (any Relux.Logger),
 		appStore: Store = .init(),
 		rootSaga: RootSaga = .init()
 	) {
 		self.store = appStore
 		self.rootSaga = rootSaga
+		Relux.Dispatcher.setup(logger: logger)
 	}
 	
 	
 	@MainActor
 	@discardableResult
 	public func register(_ module: Module) -> Relux {
-		module.states
+		module
+			.states
 			.forEach {
 				store.connectState(state: $0)
 			}
 		
-		module.uistates
+		module
+			.uistates
 			.forEach {
 				store.connectState(uistate: $0)
 			}
 		
-		module.sagas
+		module
+			.routers
+			.forEach {
+				store.connectRouter(router: $0)
+			}
+		
+		module
+			.sagas
 			.forEach {
 				rootSaga.connectSaga(saga: $0)
 			}
@@ -36,9 +47,11 @@ public final class Relux: Sendable {
 	
 	@MainActor
 	public func register(_ modules: [Module]) -> Relux {
-		for module in modules {
-			register(module)
-		}
+		modules
+			.forEach {
+				register($0)
+			}
+		
 		return self
 	}
 }

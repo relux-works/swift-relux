@@ -1,5 +1,5 @@
 public extension Relux.Navigation {
-	protocol RouterProtocol: Sendable {
+    protocol RouterProtocol: Sendable, AnyObject {
         associatedtype Page: PathComponent
 		 
 		 func reduce(with action: any Relux.Action) async

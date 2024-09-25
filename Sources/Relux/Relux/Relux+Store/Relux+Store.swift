@@ -37,12 +37,18 @@ extension Relux {
 			uistates[uistate.key] = uistate
 		}
 		
-		@MainActor
-		public func connectState(tempState: some Relux.TemporalState) -> some Relux.TemporalState {
-			tempStates[tempState.key] = .init(objectRef: tempState)
-			return tempState
-		}
-		
+//		@MainActor
+//		public func connectState(tempState: some Relux.TemporalState) -> some Relux.TemporalState {
+//			tempStates[tempState.key] = .init(objectRef: tempState)
+//			return tempState
+//		}
+
+        @MainActor
+        public func connectState<TS: Relux.TemporalState>(tempState: TS) -> TS {
+            tempStates[tempState.key] = .init(objectRef: tempState)
+            return tempState
+        }
+
 		public func notify(_ action: Relux.Action) async {
 			await states
 				.concurrentForEach { pair in

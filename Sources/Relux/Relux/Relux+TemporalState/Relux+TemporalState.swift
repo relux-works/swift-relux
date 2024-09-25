@@ -1,6 +1,9 @@
 public extension Relux {
 	@MainActor
-	protocol TemporalState: Relux.State, Relux.Presentation.StatePresenting {}
+    protocol TemporalState: AnyObject, Sendable {
+        func reduce(with action: any Relux.Action) async
+        func cleanup() async
+    }
 }
 
 extension Relux.TemporalState {

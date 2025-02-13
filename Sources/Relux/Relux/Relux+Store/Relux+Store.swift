@@ -2,17 +2,17 @@ extension Relux {
 	public actor Store: Relux.Subscriber, Sendable {
 		
 		@MainActor
-		public private(set) var uistates: [ObjectIdentifier: any Relux.Presentation.StatePresenting] = [:]
-		
+        public private(set) var uistates: [TypeKeyable.Key: any Relux.Presentation.StatePresenting] = [:]
+
 		@MainActor
-		public private(set) var routers: [ObjectIdentifier: any Relux.Navigation.RouterProtocol] = [:]
-		
+		public private(set) var routers: [TypeKeyable.Key: any Relux.Navigation.RouterProtocol] = [:]
+
 		@MainActor
-		public private(set) var states: [ObjectIdentifier: any Relux.State] = [:]
-		
+		public private(set) var states: [TypeKeyable.Key: any Relux.State] = [:]
+
 		@MainActor
-		internal private(set) var tempStates: [ObjectIdentifier: TemporalStateRef] = [:]
-		
+		internal private(set) var tempStates: [TypeKeyable.Key: TemporalStateRef] = [:]
+
 		public init() {
 			Relux.Dispatcher.subscribe(self)
 		}
@@ -24,24 +24,27 @@ extension Relux {
 		
 		@MainActor
 		public func connectRouter(router: any Relux.Navigation.RouterProtocol) {
-			routers[router.key] = router
+            guard routers[router.key].isNil else {
+                fatalError("failed to add router, already exists: \(router)")
+            }
+            routers[router.key] = router
 		}
 		
 		@MainActor
 		public func connectState(state: any Relux.State) {
+            guard states[state.key].isNil else {
+                fatalError("failed to add state, already exists: \(state)")
+            }
 			states[state.key] = state
 		}
 		
 		@MainActor
 		public func connectState(uistate: any Relux.Presentation.StatePresenting) {
-			uistates[uistate.key] = uistate
+            guard uistates[uistate.key].isNil else {
+                fatalError("failed to add uistate, already exists: \(uistate)")
+            }
+            uistates[uistate.key] = uistate
 		}
-		
-//		@MainActor
-//		public func connectState(tempState: some Relux.TemporalState) -> some Relux.TemporalState {
-//			tempStates[tempState.key] = .init(objectRef: tempState)
-//			return tempState
-//		}
 
         @MainActor
         public func connectState<TS: Relux.TemporalState>(tempState: TS) -> TS {

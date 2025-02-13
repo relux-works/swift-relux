@@ -1,12 +1,7 @@
 public extension Relux {
-	protocol State: Actor, AnyObject {
+    protocol State: Actor, TypeKeyable {
 		func reduce(with action: any Relux.Action) async
 		
 		func cleanup() async
 	}
-}
-
-internal extension Relux.State {
-	nonisolated var key: ObjectIdentifier { .init(type(of: self)) }
-	nonisolated static var key: ObjectIdentifier { .init(self) }
 }

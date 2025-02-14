@@ -39,29 +39,6 @@ public extension Relux {
 }
 
 public extension Relux.AssociatedValuesReflectable {
-    var _associatedValues: [String : String] {
-        var values = [String : String]()
-        guard let associated = Mirror(reflecting: self).children.first else {
-            return values
-        }
-        
-        // Try to reflect deeper
-        let children = Mirror(reflecting: associated.value).children
-        
-        if children.isEmpty {
-            // Single unlabeled case
-            values["value"] = String(describing: associated.value)
-        } else {
-            // We have multiple labeled properties
-            for case let (label?, childValue) in children {
-                values[label] = String(describing: childValue)
-            }
-        }
-        return values
-    }
-}
-
-public extension Relux.AssociatedValuesReflectable {
     var associatedValues: [String] {
         var values = [String]()
         guard let associated = Mirror(reflecting: self).children.first else {

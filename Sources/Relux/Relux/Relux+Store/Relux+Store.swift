@@ -47,6 +47,21 @@ extension Relux {
 		}
 
         @MainActor
+        public func disconnectRouter(router: any Relux.Navigation.RouterProtocol) {
+            routers.removeValue(forKey: router.key)
+        }
+
+        @MainActor
+        public func disconnectState(state: any Relux.State) {
+            states.removeValue(forKey: state.key)
+        }
+
+        @MainActor
+        public func disconnectState(uistate: any Relux.Presentation.StatePresenting) {
+            uistates.removeValue(forKey: uistate.key)
+        }
+
+        @MainActor
         public func connectState<TS: Relux.TemporalState>(tempState: TS) -> TS {
             tempStates[tempState.key] = .init(objectRef: tempState)
             return tempState

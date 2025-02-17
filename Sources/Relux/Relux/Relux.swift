@@ -44,7 +44,37 @@ public final class Relux: Sendable {
 		
 		return self
 	}
-	
+
+    @MainActor
+    @discardableResult
+    public func unregister(_ module: Module) -> Relux {
+        module
+            .states
+            .forEach {
+                store.disconnectState(state: $0)
+            }
+
+        module
+            .uistates
+            .forEach {
+                store.disconnectState(uistate: $0)
+            }
+
+        module
+            .routers
+            .forEach {
+                store.disconnectRouter(router: $0)
+            }
+
+        module
+            .sagas
+            .forEach {
+                rootSaga.disconnectSaga(saga: $0)
+            }
+
+        return self
+    }
+
 	@MainActor
 	public func register(_ modules: [Module]) -> Relux {
 		modules

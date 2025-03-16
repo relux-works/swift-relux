@@ -1,103 +1,61 @@
 extension Relux {
-	public actor Store: Relux.Subscriber, Sendable {
-		
-		@MainActor
-        public private(set) var uistates: [TypeKeyable.Key: any Relux.Presentation.StatePresenting] = [:]
+    public actor Store: Relux.Subscriber, Sendable {
+        private let lock: AsyncLock = .init()
 
-		@MainActor
-		public private(set) var routers: [TypeKeyable.Key: any Relux.Navigation.RouterProtocol] = [:]
+        @MainActor
+        public private(set) var states: [TypeKeyable.Key: any Relux.State] = [:]
 
-		@MainActor
-		public private(set) var states: [TypeKeyable.Key: any Relux.State] = [:]
+        @MainActor
+        internal private(set) var tempStates: [TypeKeyable.Key: StateRef] = [:]
 
-		@MainActor
-		internal private(set) var tempStates: [TypeKeyable.Key: TemporalStateRef] = [:]
+        public init() {
+            Relux.Dispatcher.subscribe(self)
+        }
 
-		public init() {
-			Relux.Dispatcher.subscribe(self)
-		}
-		
-		public func cleanup() async {
-			await states
-				.concurrentForEach { await $0.value.cleanup() }
-		}
-		
-		@MainActor
-		public func connectRouter(router: any Relux.Navigation.RouterProtocol) {
-            guard routers[router.key].isNil else {
-                fatalError("failed to add router, already exists: \(router)")
+        public func cleanup() async {
+            await lock.withLock {
+                await states
+                    .concurrentForEach { await $0.value.cleanup() }
             }
-            routers[router.key] = router
-		}
-		
-		@MainActor
-		public func connectState(state: any Relux.State) {
+        }
+
+        @MainActor
+        public func connectState(state: some Relux.State) {
             guard states[state.key].isNil else {
                 fatalError("failed to add state, already exists: \(state)")
             }
-			states[state.key] = state
-		}
-		
-		@MainActor
-		public func connectState(uistate: any Relux.Presentation.StatePresenting) {
-            guard uistates[uistate.key].isNil else {
-                fatalError("failed to add uistate, already exists: \(uistate)")
-            }
-            uistates[uistate.key] = uistate
-		}
-
-        @MainActor
-        public func disconnectRouter(router: any Relux.Navigation.RouterProtocol) {
-            routers.removeValue(forKey: router.key)
+            states[state.key] = state
         }
 
         @MainActor
-        public func disconnectState(state: any Relux.State) {
-            states.removeValue(forKey: state.key)
-        }
-
-        @MainActor
-        public func disconnectState(uistate: any Relux.Presentation.StatePresenting) {
-            uistates.removeValue(forKey: uistate.key)
-        }
-
-        @MainActor
-        public func connectState<TS: Relux.TemporalState>(tempState: TS) -> TS {
+        public func connectState(tempState: some Relux.State) -> some Relux.State {
             tempStates[tempState.key] = .init(objectRef: tempState)
             return tempState
         }
 
-		public func notify(_ action: Relux.Action) async {
-			await states
-				.concurrentForEach { pair in
-					await pair.value.reduce(with: action)
-				}
-			
-			await tempStates
-				.concurrentForEach { pair in
-					await pair.value.objectRef?.reduce(with: action)
-				}
-			
-			await routers
-				.concurrentForEach { pair in
-					await pair.value.reduce(with: action)
-				}
-		}
-		
-		@MainActor
-		@available(*, deprecated, message: "Use Relux modules")
-		public func getState<T: Relux.State>(_ type: T.Type) -> T {
-			let state = states[T.key]
-			return state as! T
-		}
-		
-		
-		@MainActor
-		@available(*, deprecated, message: "Use Relux modules")
-		public func getState<T: Relux.Presentation.StatePresenting>(_ type: T.Type) -> T {
-			let state = uistates[T.key]
-			return state as! T
-		}
-		
-	}
+        @MainActor
+        public func disconnectState(state: some Relux.State) {
+            states.removeValue(forKey: state.key)
+        }
+
+        public func notify(_ action: Relux.Action) async {
+            await lock.withLock {
+                await states
+                    .concurrentForEach { pair in
+                        await pair.value.reduce(with: action)
+                    }
+
+                await tempStates
+                    .concurrentForEach { pair in
+                        await pair.value.objectRef?.reduce(with: action)
+                    }
+            }
+        }
+
+        @MainActor
+        public func getState<T: Relux.State>(_ type: T.Type) -> T {
+            let state = states[T.key]
+            return state as! T
+        }
+    }
 }

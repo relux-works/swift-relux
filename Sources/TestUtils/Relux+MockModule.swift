@@ -8,12 +8,10 @@ extension Relux.Testing {
         public let effectsLogger: Saga
 
         public let states: [any Relux.State]
-        public let uistates: [any Relux.Presentation.StatePresenting] = []
         public let sagas: [any Relux.Saga]
-        public let routers: [any Relux.Navigation.RouterProtocol] = []
 
-        public init() {
-            let actionsLogger = State()
+        public init() async {
+            let actionsLogger = await State()
             self.actionsLogger = actionsLogger
             self.states = [actionsLogger]
 

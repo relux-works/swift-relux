@@ -32,3 +32,4 @@ Carthage/Build
 *.entitlements
 *.xcodeproj/
 gitrelease
+DerivedData/

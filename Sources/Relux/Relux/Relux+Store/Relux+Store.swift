@@ -1,6 +1,9 @@
+import Foundation
+
 extension Relux {
+    @globalActor
     public actor Store: Relux.Subscriber, Sendable {
-        private let lock: AsyncLock = .init()
+        static public var shared: Store { Store() }
 
         @MainActor
         public private(set) var states: [TypeKeyable.Key: any Relux.State] = [:]
@@ -13,10 +16,8 @@ extension Relux {
         }
 
         public func cleanup() async {
-            await lock.withLock {
-                await states
-                    .concurrentForEach { await $0.value.cleanup() }
-            }
+            await states
+                .concurrentForEach { await $0.value.cleanup() }
         }
 
         @MainActor
@@ -39,17 +40,15 @@ extension Relux {
         }
 
         public func notify(_ action: Relux.Action) async {
-            await lock.withLock {
-                await states
-                    .concurrentForEach { pair in
-                        await pair.value.reduce(with: action)
-                    }
+            await states
+                .concurrentForEach { pair in
+                    await pair.value.reduce(with: action)
+                }
 
-                await tempStates
-                    .concurrentForEach { pair in
-                        await pair.value.objectRef?.reduce(with: action)
-                    }
-            }
+            await tempStates
+                .concurrentForEach { pair in
+                    await pair.value.objectRef?.reduce(with: action)
+                }
         }
 
         @MainActor

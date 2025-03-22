@@ -1,5 +1,4 @@
-// swift-tools-version: 5.10
-
+// swift-tools-version: 6.0
 import PackageDescription
 
 let package = Package(
@@ -16,8 +15,7 @@ let package = Package(
 			targets: ["Relux"]
 		),
 	],
-	dependencies:      [
-
+	dependencies: [
 	],
 	targets: [
 		.target(

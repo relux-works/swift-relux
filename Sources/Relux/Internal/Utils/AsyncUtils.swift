@@ -1,24 +1,23 @@
 import Foundation
+
 // John Sundell (c)
 // https://github.com/JohnSundell/CollectionConcurrencyKit/blob/main/Sources/CollectionConcurrencyKit.swift
 
+extension Sequence where Element: Sendable {
 
-internal extension Sequence where Element: Sendable {
-	
-	@inlinable @inline(__always)
+    @inlinable @inline(__always)
     func asyncForEach(
-            _ operation: @Sendable (Element) async throws -> Void
+        _ operation: @Sendable (Element) async throws -> Void
     ) async rethrows {
         for element in self {
             try await operation(element)
         }
     }
 
-	
-	@inlinable @inline(__always)
+    @inlinable @inline(__always)
     func concurrentForEach(
-            withPriority priority: TaskPriority? = nil,
-			_ operation: @escaping @Sendable (Element) async -> Void
+        withPriority priority: TaskPriority? = nil,
+        _ operation: @escaping @Sendable (Element) async -> Void
     ) async {
         await withTaskGroup(of: Void.self) { group in
             for element in self {
@@ -30,11 +29,11 @@ internal extension Sequence where Element: Sendable {
     }
 }
 
-internal extension Sequence where Element: Sendable {
-	
-	@inline(__always)
+extension Sequence where Element: Sendable {
+
+    @inline(__always)
     func asyncMap<T>(
-            _ transform: (Element) async throws -> T
+        _ transform: (Element) async throws -> T
     ) async rethrows -> [T] {
         var values = [T]()
 
@@ -44,12 +43,11 @@ internal extension Sequence where Element: Sendable {
 
         return values
     }
-	
-	
-	@inline(__always)
-	func concurrentMap<T: Sendable>(
-            withPriority priority: TaskPriority? = nil,
-            _ transform: @escaping @Sendable (Element) async -> T
+
+    @inline(__always)
+    func concurrentMap<T: Sendable>(
+        withPriority priority: TaskPriority? = nil,
+        _ transform: @escaping @Sendable (Element) async -> T
     ) async -> [T] {
         let tasks = map { element in
             Task(priority: priority) {
@@ -62,11 +60,10 @@ internal extension Sequence where Element: Sendable {
         }
     }
 
-	
-	@inline(__always)
-	func concurrentMap<T: Sendable>(
-            withPriority priority: TaskPriority? = nil,
-            _ transform: @escaping @Sendable (Element) async throws -> T
+    @inline(__always)
+    func concurrentMap<T: Sendable>(
+        withPriority priority: TaskPriority? = nil,
+        _ transform: @escaping @Sendable (Element) async throws -> T
     ) async rethrows -> [T] {
         let tasks = map { element in
             Task(priority: priority) {
@@ -80,11 +77,11 @@ internal extension Sequence where Element: Sendable {
     }
 }
 
-internal extension Sequence where Element: Sendable {
-	
-	@inline(__always)
-	func asyncCompactMap<T: Sendable>(
-            _ transform: (Element) async throws -> T?
+extension Sequence where Element: Sendable {
+
+    @inline(__always)
+    func asyncCompactMap<T: Sendable>(
+        _ transform: (Element) async throws -> T?
     ) async rethrows -> [T] {
         var values = [T]()
 
@@ -99,11 +96,10 @@ internal extension Sequence where Element: Sendable {
         return values
     }
 
-	
-	@inline(__always)
+    @inline(__always)
     func concurrentCompactMap<T: Sendable>(
-            withPriority priority: TaskPriority? = nil,
-            _ transform: @escaping @Sendable (Element) async -> T?
+        withPriority priority: TaskPriority? = nil,
+        _ transform: @escaping @Sendable (Element) async -> T?
     ) async -> [T] {
         let tasks = map { element in
             Task(priority: priority) {
@@ -116,11 +112,10 @@ internal extension Sequence where Element: Sendable {
         }
     }
 
-	
-	@inline(__always)
+    @inline(__always)
     func concurrentCompactMap<T: Sendable>(
-            withPriority priority: TaskPriority? = nil,
-            _ transform: @escaping @Sendable (Element) async throws -> T?
+        withPriority priority: TaskPriority? = nil,
+        _ transform: @escaping @Sendable (Element) async throws -> T?
     ) async rethrows -> [T] {
         let tasks = map { element in
             Task(priority: priority) {
@@ -134,12 +129,11 @@ internal extension Sequence where Element: Sendable {
     }
 }
 
-internal extension Sequence where Element: Sendable {
-	
-	
-	@inline(__always)
+extension Sequence where Element: Sendable {
+
+    @inline(__always)
     func asyncFlatMap<T: Sequence>(
-            _ transform: (Element) async throws -> T
+        _ transform: (Element) async throws -> T
     ) async rethrows -> [T.Element] {
         var values = [T.Element]()
 
@@ -150,11 +144,10 @@ internal extension Sequence where Element: Sendable {
         return values
     }
 
-	
-	@inline(__always)
-	func concurrentFlatMap<T: Sequence & Sendable>(
-            withPriority priority: TaskPriority? = nil,
-            _ transform: @escaping @Sendable (Element) async -> T
+    @inline(__always)
+    func concurrentFlatMap<T: Sequence & Sendable>(
+        withPriority priority: TaskPriority? = nil,
+        _ transform: @escaping @Sendable (Element) async -> T
     ) async -> [T.Element] {
         let tasks = map { element in
             Task(priority: priority) {
@@ -167,11 +160,10 @@ internal extension Sequence where Element: Sendable {
         }
     }
 
-	
-	@inline(__always)
+    @inline(__always)
     func concurrentFlatMap<T: Sequence & Sendable>(
-            withPriority priority: TaskPriority? = nil,
-            _ transform: @escaping @Sendable (Element) async throws -> T
+        withPriority priority: TaskPriority? = nil,
+        _ transform: @escaping @Sendable (Element) async throws -> T
     ) async rethrows -> [T.Element] {
         let tasks = map { element in
             Task(priority: priority) {
@@ -184,4 +176,3 @@ internal extension Sequence where Element: Sendable {
         }
     }
 }
-

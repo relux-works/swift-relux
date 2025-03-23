@@ -2,7 +2,7 @@
 ///
 /// This lock allows you to create critical sections in your asynchronous code.
 @usableFromInline
-internal actor AsyncLock {
+internal actor AsyncLock: Sendable {
     /// Indicates whether the lock is currently held.
     private var isLocked = false
 
@@ -10,7 +10,7 @@ internal actor AsyncLock {
     private var waitingTasks: [CheckedContinuation<Void, Never>] = []
 
     /// Acquires the lock, suspending the current task until the lock becomes available.
-    private func lock() async {
+    func lock() async {
         if isLocked {
             await withCheckedContinuation { continuation in
                 waitingTasks.append(continuation)
@@ -21,7 +21,7 @@ internal actor AsyncLock {
     }
 
     /// Releases the lock, allowing other tasks to acquire it.
-    private func unlock() {
+    func unlock() {
         if waitingTasks.isEmpty {
             isLocked = false
         } else {

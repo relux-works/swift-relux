@@ -1,5 +1,5 @@
 extension Relux {
-	internal protocol Subscriber: Actor {
+    internal protocol Subscriber: AnyObject, Sendable {
 		func notify(_ action: Relux.Action) async
 	}
 }

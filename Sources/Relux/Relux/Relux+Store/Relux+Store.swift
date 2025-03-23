@@ -1,10 +1,7 @@
 import Foundation
 
 extension Relux {
-    @globalActor
-    public actor Store: Relux.Subscriber, Sendable {
-        static public var shared: Store { Store() }
-
+    public final class Store: Relux.Subscriber, Sendable {
         @MainActor
         public private(set) var states: [TypeKeyable.Key: any Relux.State] = [:]
 
@@ -13,11 +10,6 @@ extension Relux {
 
         public init() {
             Relux.Dispatcher.subscribe(self)
-        }
-
-        public func cleanup() async {
-            await states
-                .concurrentForEach { await $0.value.cleanup() }
         }
 
         @MainActor
@@ -49,6 +41,11 @@ extension Relux {
                 .concurrentForEach { pair in
                     await pair.value.objectRef?.reduce(with: action)
                 }
+        }
+
+        public func cleanup() async {
+            await states
+                .concurrentForEach { await $0.value.cleanup() }
         }
 
         @MainActor

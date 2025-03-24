@@ -1,3 +1,3 @@
-public extension Relux {
-	protocol Effect: Relux.Action {}
+extension Relux {
+    public protocol Effect: Relux.Action {}
 }

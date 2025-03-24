@@ -1,50 +1,47 @@
-
-public extension Relux {
-	/// Provides caseName and associatedValues custom mirrors for enumerations.
-	 protocol EnumReflectable: CaseNameReflectable, AssociatedValuesReflectable {
-		var subsystem: String { get }
-		var category: String { get }
-	}
+extension Relux {
+    /// Provides caseName and associatedValues custom mirrors for enumerations.
+    public protocol EnumReflectable: CaseNameReflectable, AssociatedValuesReflectable {
+        var subsystem: String { get }
+        var category: String { get }
+    }
 }
 
-public extension Relux.EnumReflectable {
-	
-	var subsystem: String { "Relux" }
-	
-	var category: String { "Logger" }
-}
-	
-public extension Relux {
-	// reflecting enum cases
-	protocol CaseNameReflectable {
-		var caseName: String { get }
-	}
+extension Relux.EnumReflectable {
+    public var subsystem: String { "Relux" }
+    public var category: String { "Logger" }
 }
 
-public extension Relux.CaseNameReflectable {
-	var caseName: String {
-		let mirror = Mirror(reflecting: self)
-		guard let caseName = mirror.children.first?.label else {
-			return "\(mirror.subjectType).\(self)"
-		}
-		return "\(mirror.subjectType).\(caseName)"
-	}
+extension Relux {
+    // reflecting enum cases
+    public protocol CaseNameReflectable {
+        var caseName: String { get }
+    }
+}
+
+extension Relux.CaseNameReflectable {
+    public var caseName: String {
+        let mirror = Mirror(reflecting: self)
+        guard let caseName = mirror.children.first?.label else {
+            return "\(mirror.subjectType).\(self)"
+        }
+        return "\(mirror.subjectType).\(caseName)"
+    }
 }
 
 // reflecting enum associated values
-public extension Relux {
-	protocol AssociatedValuesReflectable {
-		var associatedValues:  [String]  { get }
-	}
+extension Relux {
+    public protocol AssociatedValuesReflectable {
+        var associatedValues: [String] { get }
+    }
 }
 
-public extension Relux.AssociatedValuesReflectable {
-    var associatedValues: [String] {
+extension Relux.AssociatedValuesReflectable {
+    public var associatedValues: [String] {
         var values = [String]()
         guard let associated = Mirror(reflecting: self).children.first else {
             return values
         }
-        
+
         let valueMirror = Mirror(reflecting: associated.value)
         switch valueMirror.displayStyle {
         case .tuple:

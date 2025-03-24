@@ -1,7 +1,7 @@
 @MainActor
 public final class Relux: Sendable {
-    @MainActor public let store: Store
-    @MainActor public let rootSaga: RootSaga
+    public let store: Store
+    public let rootSaga: RootSaga
 
     public init(
         logger: (any Relux.Logger),
@@ -12,13 +12,15 @@ public final class Relux: Sendable {
         self.rootSaga = rootSaga
         Relux.Dispatcher.setup(logger: logger)
     }
+}
 
-    @MainActor
+// register
+extension Relux {
     @discardableResult
     public func register(_ module: Module) -> Relux {
         module
             .states
-            .forEach { store.connectState(state: $0) }
+            .forEach { store.connect(state: $0) }
 
         module
             .sagas
@@ -27,29 +29,44 @@ public final class Relux: Sendable {
         return self
     }
 
-    @MainActor
     @discardableResult
-    public func unregister(_ module: Module) -> Relux {
-        module
+    public func register(@Relux.ModuleResultBuilder _ modules: @Sendable () async -> [Relux.Module]) async -> Relux {
+        await modules()
+            .forEach { register($0) }
+
+        return self
+    }
+}
+
+// unregister
+extension Relux {
+    @discardableResult
+    public func unregister(_ module: Module) async -> Relux {
+        await module
             .states
-            .forEach {
-                store.disconnectState(state: $0)
+            .asyncForEach {
+                await store.disconnect(state: $0)
             }
 
         module
             .sagas
             .forEach {
-                rootSaga.disconnectSaga(saga: $0)
+                rootSaga.disconnect(saga: $0)
             }
 
         return self
     }
 
-    @MainActor
-    public func register(_ modules: [Module]) -> Relux {
-        modules
-            .forEach { register($0) }
+}
 
-        return self
+// modules builder
+extension Relux {
+    @resultBuilder
+    public struct ModuleResultBuilder {
+        public static func buildBlock() -> [any Module] { [] }
+
+        public static func buildBlock(_ modules: any Module...) -> [any Module] {
+            modules
+        }
     }
 }

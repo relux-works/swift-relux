@@ -1,8 +1,7 @@
 import Foundation
 
 extension Relux.Testing.MockModule {
-    @MainActor
-    public final class State: Relux.State {
+    public actor State: Relux.BusinessState {
         public var actions: [Relux.Action] = []
         public var cleanupCalledAt: Date?
 

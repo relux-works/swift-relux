@@ -7,7 +7,7 @@ extension Relux.Testing {
         public let actionsLogger: State
         public let effectsLogger: Saga
 
-        public let states: [any Relux.State]
+        public let states: [any Relux.AnyState]
         public let sagas: [any Relux.Saga]
 
         public init() async {

@@ -6,8 +6,10 @@ extension Relux {
         func cleanup() async
     }
 
+    @MainActor
     public protocol UIState: AnyState {}
 
+    @MainActor
     public protocol HybridState: BusinessState, UIState {
         func reduce(with action: any Relux.Action) async
         func cleanup() async

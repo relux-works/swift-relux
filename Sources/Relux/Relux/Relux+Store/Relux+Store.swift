@@ -70,7 +70,7 @@ extension Relux.Store {
         }
     }
 
-    public func connectTemporally(state: some Relux.HybridState) -> some Relux.HybridState {
+    public func connectTemporally<TS: Relux.HybridState>(state: TS) -> TS {
         tempStates[state.key] = .init(objectRef: state)
         return state
     }

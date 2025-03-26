@@ -17,12 +17,12 @@ extension Relux {
 // actions propagation
 extension Relux.Store: Relux.Subscriber {
     internal func notify(_ action: Relux.Action) async {
-        async let notifyBusiness = businessStates
+        async let notifyBusiness: () = businessStates
             .concurrentForEach { pair in
                 await pair.value.reduce(with: action)
             }
 
-        async let notifyTemporals = await tempStates
+        async let notifyTemporals: () = tempStates
             .concurrentForEach { pair in
                 await pair.value.objectRef?.reduce(with: action)
             }
@@ -95,7 +95,7 @@ extension Relux.Store {
     public func disconnect(state: some Relux.AnyState) async {
         guard
             let businessState = state as? Relux.BusinessState,
-            let state = await businessStates[businessState.key]
+            let state = businessStates[businessState.key]
         else { return }
 
         await state.cleanup()
@@ -106,7 +106,11 @@ extension Relux.Store {
 // cleanup
 extension Relux.Store {
     public func cleanup() async {
-        await businessStates
+        async let businessCleanup: () = businessStates
             .concurrentForEach { await $0.value.cleanup() }
+        async let tempCleanup: () = tempStates
+            .concurrentForEach { await $0.value.objectRef?.cleanup() }
+
+        _ = await (businessCleanup, tempCleanup)
     }
 }

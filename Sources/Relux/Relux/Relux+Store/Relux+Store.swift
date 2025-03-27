@@ -108,9 +108,5 @@ extension Relux.Store {
     public func cleanup() async {
         async let businessCleanup: () = businessStates
             .concurrentForEach { await $0.value.cleanup() }
-        async let tempCleanup: () = tempStates
-            .concurrentForEach { await $0.value.objectRef?.cleanup() }
-
-        _ = await (businessCleanup, tempCleanup)
     }
 }

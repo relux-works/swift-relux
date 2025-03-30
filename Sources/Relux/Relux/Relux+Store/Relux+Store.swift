@@ -105,8 +105,17 @@ extension Relux.Store {
 
 // cleanup
 extension Relux.Store {
-    public func cleanup() async {
-        async let businessCleanup: () = businessStates
-            .concurrentForEach { await $0.value.cleanup() }
+    public func cleanup(
+        exclusions: [Relux.BusinessState.Type] = []
+    ) async {
+        let excludedKeys = exclusions
+            .map { $0.key }
+            .asSet
+
+        await businessStates
+            .concurrentForEach {
+                guard excludedKeys.contains($0.key).not else { return }
+                await $0.value.cleanup()
+            }
     }
 }

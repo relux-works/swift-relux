@@ -1,30 +1,21 @@
 extension Relux {
-    public typealias Success = Void
-    public typealias ActionResult = Result<Success, Error>
-    public typealias FlowResult = ActionResult
+    public enum ActionResult: Sendable {
+        public typealias Payload = Sendable
+
+        case success(payload: Payload = Void())
+        case failure(Error)
+    }
 }
 
 extension Relux.ActionResult {
-    struct AccumulativeFail: Error {
+    public static let success: Self = .success()
+
+    struct Fail: Error {
         let errors: [Error]
     }
 }
 
 extension Relux.ActionResult {
-    public static let success: Relux.ActionResult = .success(Success())
-
-    var isSuccess: Bool {
-        switch self {
-            case .success: true
-            case .failure: false
-        }
-    }
-    var isFail: Bool {
-        switch self {
-            case .success: false
-            case .failure: true
-        }
-    }
     var fail: Error? {
         switch self {
             case .success: .none
@@ -34,15 +25,12 @@ extension Relux.ActionResult {
 }
 
 extension Sequence where Element == Relux.ActionResult {
-    var allSucceeded: Bool { allSatisfy(\.isSuccess) }
-    var hasFail: Bool { contains(where: \.isFail) }
     var fails: [Error] { self.compactMap { $0.fail } }
 
     var reducedResult: Relux.ActionResult {
-        let fails = self.fails
-        return switch fails.isEmpty {
+        switch self.fails.isEmpty {
             case true: .success
-            case false: .failure(Relux.ActionResult.AccumulativeFail(errors: fails))
+            case false: .failure(Relux.ActionResult.Fail(errors: self.fails))
         }
     }
 }

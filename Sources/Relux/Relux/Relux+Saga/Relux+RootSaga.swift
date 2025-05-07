@@ -17,7 +17,7 @@ extension Relux.RootSaga: Relux.Subscriber {
         return await notifyFlows(with: effect)
     }
 
-    private func notifyFlows(with effect: Relux.Effect) async -> Relux.FlowResult {
+    private func notifyFlows(with effect: Relux.Effect) async -> Relux.ActionResult {
         await sagas
             .concurrentMap {
                 switch $0.value {

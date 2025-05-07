@@ -11,6 +11,8 @@ public final class Relux: Sendable {
         self.store = appStore
         self.rootSaga = rootSaga
         Relux.Dispatcher.setup(logger: logger)
+        Relux.Dispatcher.subscribe(appStore)
+        Relux.Dispatcher.subscribe(rootSaga)
     }
 }
 

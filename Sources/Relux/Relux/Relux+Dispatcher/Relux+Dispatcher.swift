@@ -19,22 +19,28 @@ extension Relux {
             functionName: String,
             lineNumber: Int,
             label: (@Sendable () -> String)? = nil
-        ) async {
+        ) async -> Relux.ActionResult {
             let execStartTime = timestamp.milliseconds
 
             if let delay {
                 let delay = UInt64(delay * 1_000_000_000)
                 try? await Task<Never, Never>.sleep(nanoseconds: delay)
             }
-            await actions
-                .asyncForEach { action in
-                    await subscribers
-                        .concurrentForEach {
-                            await $0.subscriber?.notify(action)
+
+            return await actions
+                .asyncFlatMap { action in
+                    let results = await subscribers
+                        .lazy
+                        .compactMap { $0.subscriber }
+                        .concurrentMap {
+                            await $0.perform(action)
                         }
                     logger?.logAction(
                         action, startTimeInMillis: execStartTime, privacy: .private, fileID: fileID, functionName: functionName, lineNumber: lineNumber)
+
+                    return results
                 }
+                .reducedResult
         }
 
         @inline(__always)
@@ -45,7 +51,7 @@ extension Relux {
             functionName: String,
             lineNumber: Int,
             label: (@Sendable () -> String)? = nil
-        ) async {
+        ) async -> Relux.ActionResult {
             let execStartTime = timestamp.milliseconds
 
             if let delay {
@@ -53,15 +59,21 @@ extension Relux {
                 try? await Task<Never, Never>.sleep(nanoseconds: delay)
             }
 
-            await actions
-                .concurrentForEach { action in
-                    await subscribers
-                        .concurrentForEach {
-                            await $0.subscriber?.notify(action)
+            return await actions
+                .concurrentFlatMap { action in
+                    let result = await subscribers
+                        .lazy
+                        .compactMap { $0.subscriber }
+                        .concurrentMap {
+                            await $0.perform(action)
                         }
+
                     logger?.logAction(
                         action, startTimeInMillis: execStartTime, privacy: .private, fileID: fileID, functionName: functionName, lineNumber: lineNumber)
+
+                    return result
                 }
+                .reducedResult
         }
     }
 }

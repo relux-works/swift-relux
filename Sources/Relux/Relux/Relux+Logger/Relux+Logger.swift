@@ -2,16 +2,8 @@ extension Relux {
     public protocol Logger {
         func logAction(
             _ action: Relux.EnumReflectable,
+            result: Relux.ActionResult?,
             startTimeInMillis: Int,
-            privacy: Relux.OSLogPrivacy,
-            fileID: String,
-            functionName: String,
-            lineNumber: Int
-        )
-
-        func logAction(
-            _ action: Relux.EnumReflectable,
-            text: String,
             privacy: Relux.OSLogPrivacy,
             fileID: String,
             functionName: String,

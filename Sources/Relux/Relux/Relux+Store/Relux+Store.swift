@@ -9,13 +9,12 @@ extension Relux {
         public private(set) var uiStates: [TypeKeyable.Key: any Relux.UIState] = [:]
 
         public init() {
-            Relux.Dispatcher.subscribe(self)
         }
     }
 }
 
 // actions propagation
-extension Relux.Store: Relux.Subscriber {
+extension Relux.Store {
     internal func notify(_ action: Relux.Action) async {
         async let notifyBusiness: () = businessStates
             .concurrentForEach { pair in
@@ -28,6 +27,13 @@ extension Relux.Store: Relux.Subscriber {
             }
 
         _ = await (notifyBusiness, notifyTemporals)
+    }
+}
+
+extension Relux.Store: Relux.Subscriber {
+    internal func perform(_ action: Relux.Action) async -> Relux.ActionResult? {
+        await self.notify(action)
+        return .none
     }
 }
 

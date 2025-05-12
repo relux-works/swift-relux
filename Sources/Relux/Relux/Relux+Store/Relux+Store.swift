@@ -31,9 +31,9 @@ extension Relux.Store {
 }
 
 extension Relux.Store: Relux.Subscriber {
-    internal func perform(_ action: Relux.Action) async -> Relux.ActionResult {
+    internal func perform(_ action: Relux.Action) async -> Relux.ActionResult? {
         await self.notify(action)
-        return .success
+        return .none
     }
 }
 

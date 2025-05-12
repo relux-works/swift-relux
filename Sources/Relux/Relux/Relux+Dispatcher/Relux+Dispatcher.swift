@@ -32,11 +32,10 @@ extension Relux {
                     let results = await subscribers
                         .lazy
                         .compactMap { $0.subscriber }
-                        .concurrentMap {
-                            await $0.perform(action)
-                        }
+                        .concurrentCompactMap { await $0.perform(action) }
+
                     logger?.logAction(
-                        action, startTimeInMillis: execStartTime, privacy: .private, fileID: fileID, functionName: functionName, lineNumber: lineNumber)
+                        action, result: results.reducedResult, startTimeInMillis: execStartTime, privacy: .private, fileID: fileID, functionName: functionName, lineNumber: lineNumber)
 
                     return results
                 }
@@ -61,17 +60,17 @@ extension Relux {
 
             return await actions
                 .concurrentFlatMap { action in
-                    let result = await subscribers
+                    let results = await subscribers
                         .lazy
                         .compactMap { $0.subscriber }
-                        .concurrentMap {
+                        .concurrentCompactMap {
                             await $0.perform(action)
                         }
 
                     logger?.logAction(
-                        action, startTimeInMillis: execStartTime, privacy: .private, fileID: fileID, functionName: functionName, lineNumber: lineNumber)
+                        action, result: results.reducedResult, startTimeInMillis: execStartTime, privacy: .private, fileID: fileID, functionName: functionName, lineNumber: lineNumber)
 
-                    return result
+                    return results
                 }
                 .reducedResult
         }

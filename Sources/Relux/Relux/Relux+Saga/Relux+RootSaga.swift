@@ -9,15 +9,15 @@ extension Relux {
 }
 
 extension Relux.RootSaga: Relux.Subscriber {
-    internal func perform(_ action: any Relux.Action) async -> Relux.ActionResult {
+    internal func perform(_ action: any Relux.Action) async -> Relux.ActionResult? {
         guard let effect = action as? Relux.Effect else {
-            return .success
+            return .none
         }
 
         return await notifyFlows(with: effect)
     }
 
-    private func notifyFlows(with effect: Relux.Effect) async -> Relux.ActionResult {
+    private func notifyFlows(with effect: Relux.Effect) async -> Relux.ActionResult? {
         await sagas
             .concurrentMap {
                 switch $0.value {

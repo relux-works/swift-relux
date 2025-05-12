@@ -1,6 +1,6 @@
 extension Relux {
     internal protocol Subscriber: AnyObject, Sendable {
-        func perform(_ action: Relux.Action) async -> ActionResult
+        func perform(_ action: Relux.Action) async -> ActionResult?
     }
 }
 

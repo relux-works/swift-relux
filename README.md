@@ -64,29 +64,31 @@ Relux encourages dividing your codebase into feature modules. A `Module` bundles
 ## Quick Example
 
 ```swift
-struct Increment: Relux.Action {}
+// from the demo app: https://github.com/ivalx1s/relux-sample
+@main
+struct SampleApp: App {
+    init() { Registry.configure() }
 
-actor CounterState: Relux.BusinessState {
-    var count = 0
-    func reduce(with action: any Relux.Action) async {
-        switch action {
-        case is Increment: count += 1
-        default: break
+    var body: some Scene {
+        WindowGroup {
+            Relux.Resolver(
+                splash: { Splash() },
+                content: { relux in
+                    Root.Container(relux: relux)
+                        .task { await setupContext() }
+                },
+                resolver: { await Registry.resolveAsync(Relux.self) }
+            )
         }
     }
-    func cleanup() async {}
+
+    private func setupContext() async {
+        await actions(.concurrently) {
+            SampleApp.Business.Effect.setAppContext
+            Auth.Business.Effect.obtainAvailableBiometryType
+        }
+    }
 }
-
-struct CounterModule: Relux.Module {
-    let states: [any Relux.AnyState] = [CounterState()]
-    let sagas: [any Relux.Saga] = []
-}
-
-let relux = Relux(logger: MyLogger())
-await relux.register { CounterModule() }
-
-// somewhere in the UI
-await action { Increment() }
 ```
 
 ## Requirements

@@ -46,15 +46,20 @@ Relux follows the same principles as Redux but introduces several features tailo
 
 ### State Types
 
-Relux comes with three categories of state objects to fit different scenarios:
+Relux provides three state types, each designed for specific use cases:
 
-- **BusinessState** – an actor that holds domain data. Use it when logic needs isolation from the main actor or may be shared across multiple UI layers. Cannot be used directly from UI layer and requires counterpart UIState.
-- **UIState** – aggregates or transforms data from one or more `BusinessState` instances (e.g. through reactive pipelines). Pick this when the UI requires complex data projections.
-- **HybridState** – the go‑to option. It runs on the main actor and exposes a reducer method for safe mutation, making it perfect for SwiftUI views.
+**HybridState** – Start here! Combines business logic and UI reactivity in one place. Runs on the main actor, perfect for SwiftUI views. Use this until you need more complexity.
 
-In other words – Business and Hybrid states are connected to Relux state machine and directly participate in its data pipelines through reducers, while UIState is independent and always connected to BusinessState(s) for data sources.
+**BusinessState + UIState** – When your app grows, split concerns:
+- `BusinessState`: Actor-based, holds your core data and business logic. Not directly observable by SwiftUI.
+- `UIState`: Observable wrapper that subscribes to BusinessState changes and transforms data for the UI.
 
-Start with a `HybridState` and split into `BusinessState` plus `UIState` as the app grows and view requirements become more involved.
+**When to use what:**
+- Simple features -> `HybridState` 
+- Complex features with shared data -> `BusinessState` + `UIState`
+- Need to aggregate and map data from multiple domains -> multiple `BusinessState`'s' + `UIState` instance to subscribe and aggregate
+
+Think of it like cooking: HybridState is your all-in-one pressure cooker, while BusinessState + UIState is your professional kitchen with separate prep and plating stations.
 
 ### Modules and Sagas
 

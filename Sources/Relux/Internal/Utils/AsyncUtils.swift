@@ -7,7 +7,7 @@ extension Sequence where Element: Sendable {
 
     @inlinable @inline(__always)
     func asyncForEach(
-        _ operation: @Sendable (Element) async throws -> Void
+        _ operation: @escaping @Sendable (Element) async throws -> Void
     ) async rethrows {
         for element in self {
             try await operation(element)
@@ -30,10 +30,9 @@ extension Sequence where Element: Sendable {
 }
 
 extension Sequence where Element: Sendable {
-
     @inline(__always)
     func asyncMap<T>(
-        _ transform: (Element) async throws -> T
+        _ transform: @escaping @Sendable (Element) async throws -> T
     ) async rethrows -> [T] {
         var values = [T]()
 
@@ -78,10 +77,9 @@ extension Sequence where Element: Sendable {
 }
 
 extension Sequence where Element: Sendable {
-
     @inline(__always)
     func asyncCompactMap<T: Sendable>(
-        _ transform: (Element) async throws -> T?
+        _ transform: @escaping @Sendable (Element) async throws -> T?
     ) async rethrows -> [T] {
         var values = [T]()
 
@@ -130,10 +128,9 @@ extension Sequence where Element: Sendable {
 }
 
 extension Sequence where Element: Sendable {
-
     @inline(__always)
     func asyncFlatMap<T: Sequence>(
-        _ transform: (Element) async throws -> T
+        _ transform: @escaping @Sendable (Element) async throws -> T
     ) async rethrows -> [T.Element] {
         var values = [T.Element]()
 

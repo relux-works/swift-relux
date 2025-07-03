@@ -2,17 +2,25 @@
 public final class Relux: Sendable {
     public let store: Store
     public let rootSaga: RootSaga
+    public let dispatcher: Dispatcher
+
+    public static var shared: Relux!
 
     public init(
         logger: (any Relux.Logger),
         appStore: Store = .init(),
         rootSaga: RootSaga = .init()
-    ) {
+    ) async {
         self.store = appStore
         self.rootSaga = rootSaga
-        Relux.Dispatcher.setup(logger: logger)
-        Relux.Dispatcher.subscribe(appStore)
-        Relux.Dispatcher.subscribe(rootSaga)
+        self.dispatcher = .init(
+            subscribers: [appStore, rootSaga],
+            logger: logger
+        )
+        
+        guard Self.shared.isNil
+        else { fatalError("only one instance of Relux is allowed") }
+        Self.shared = self
     }
 }
 
@@ -22,11 +30,11 @@ extension Relux {
     public func register(_ module: Module) -> Relux {
         module
             .states
-            .forEach { store.connect(state: $0) }
+            .forEach { self.store.connect(state: $0) }
 
         module
             .sagas
-            .forEach { rootSaga.connectSaga(saga: $0) }
+            .forEach { self.rootSaga.connectSaga(saga: $0) }
 
         return self
     }
@@ -47,13 +55,13 @@ extension Relux {
         await module
             .states
             .asyncForEach {
-                await store.disconnect(state: $0)
+                await self.store.disconnect(state: $0)
             }
 
         module
             .sagas
             .forEach {
-                rootSaga.disconnect(saga: $0)
+                self.rootSaga.disconnect(saga: $0)
             }
 
         return self

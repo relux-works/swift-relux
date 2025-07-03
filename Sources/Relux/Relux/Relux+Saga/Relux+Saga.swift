@@ -5,7 +5,7 @@ extension Relux {
 }
 
 extension Relux.Saga {
-    public func apply(_ effect: any Relux.Effect) async -> Relux.ActionResult {
+    internal func apply(_ effect: any Relux.Effect) async -> Relux.ActionResult {
         await self.apply(effect)
         return .success
     }

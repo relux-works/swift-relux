@@ -73,8 +73,8 @@ internal func _actions(
 ) async -> Relux.ActionResult {
     switch executionType {
         case .serially:
-            await Relux.Dispatcher.sequentialPerform(actions(), delay: delay, fileID: fileID, functionName: functionName, lineNumber: lineNumber, label: label)
+            await Relux.shared.dispatcher.sequentialPerform(actions(), delay: delay, fileID: fileID, functionName: functionName, lineNumber: lineNumber, label: label)
         case .concurrently:
-            await Relux.Dispatcher.concurrentPerform(actions(), delay: delay, fileID: fileID, functionName: functionName, lineNumber: lineNumber, label: label)
+            await Relux.shared.dispatcher.concurrentPerform(actions(), delay: delay, fileID: fileID, functionName: functionName, lineNumber: lineNumber, label: label)
         }
 }

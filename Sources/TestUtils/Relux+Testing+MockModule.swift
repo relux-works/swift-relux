@@ -1,7 +1,5 @@
 import Foundation
 
-extension Relux { public enum Testing {} }
-
 extension Relux.Testing {
     public actor MockModule<A: Relux.Action, E: Relux.Effect, Phantom>: Relux.Module {
         public let actionsLogger: State
@@ -11,7 +9,7 @@ extension Relux.Testing {
         public let sagas: [any Relux.Saga]
 
         public init() async {
-            let actionsLogger = await State()
+            let actionsLogger = State()
             self.actionsLogger = actionsLogger
             self.states = [actionsLogger]
 

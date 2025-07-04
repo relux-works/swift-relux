@@ -3,12 +3,18 @@ extension Relux {
         private var subscribers: [Relux.SubscriberRef] = []
         private var logger: any Relux.Logger
 
-        init(
+        internal init(
             subscribers: [Relux.Subscriber],
             logger: any Relux.Logger
         ) {
             self.subscribers = subscribers.map {.init(subscriber: $0) }
             self.logger = logger
+        }
+
+        public init(
+            logger: any Relux.Logger
+        ) {
+            self.init(subscribers: [], logger: logger)
         }
 
         @inline(__always)

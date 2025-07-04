@@ -1,5 +1,5 @@
 extension Relux {
-    public protocol Logger {
+    public protocol Logger: Sendable {
         func logAction(
             _ action: Relux.EnumReflectable,
             result: Relux.ActionResult?,

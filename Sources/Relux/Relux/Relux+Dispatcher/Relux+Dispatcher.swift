@@ -1,18 +1,24 @@
 extension Relux {
-    actor Dispatcher {
-        internal private(set) static var subscribers: [Relux.SubscriberRef] = []
-        internal private(set) static var logger: (any Relux.Logger)?
+    public actor Dispatcher {
+        private var subscribers: [Relux.SubscriberRef] = []
+        private var logger: any Relux.Logger
 
-        internal static func subscribe(_ subscriber: Relux.Subscriber) {
-            subscribers.append(.init(subscriber: subscriber))
-        }
-
-        internal static func setup(logger: (any Relux.Logger)) {
+        internal init(
+            subscribers: [Relux.Subscriber],
+            logger: any Relux.Logger
+        ) {
+            self.subscribers = subscribers.map {.init(subscriber: $0) }
             self.logger = logger
         }
 
+        public init(
+            logger: any Relux.Logger
+        ) {
+            self.init(subscribers: [], logger: logger)
+        }
+
         @inline(__always)
-        internal static func sequentialPerform(
+        internal func sequentialPerform(
             _ actions: [Relux.Action],
             delay: Seconds?,
             fileID: String,
@@ -29,12 +35,12 @@ extension Relux {
 
             return await actions
                 .asyncFlatMap { action in
-                    let results = await subscribers
+                    let results = await self.subscribers
                         .lazy
                         .compactMap { $0.subscriber }
                         .concurrentCompactMap { await $0.perform(action) }
 
-                    logger?.logAction(
+                    await self.logger.logAction(
                         action, result: results.reducedResult, startTimeInMillis: execStartTime, privacy: .private, fileID: fileID, functionName: functionName, lineNumber: lineNumber)
 
                     return results
@@ -42,8 +48,9 @@ extension Relux {
                 .reducedResult
         }
 
+
         @inline(__always)
-        internal static func concurrentPerform(
+        internal func concurrentPerform(
             _ actions: [Relux.Action],
             delay: Seconds?,
             fileID: String,
@@ -60,14 +67,14 @@ extension Relux {
 
             return await actions
                 .concurrentFlatMap { action in
-                    let results = await subscribers
+                    let results = await self.subscribers
                         .lazy
                         .compactMap { $0.subscriber }
                         .concurrentCompactMap {
                             await $0.perform(action)
                         }
 
-                    logger?.logAction(
+                    await self.logger.logAction(
                         action, result: results.reducedResult, startTimeInMillis: execStartTime, privacy: .private, fileID: fileID, functionName: functionName, lineNumber: lineNumber)
 
                     return results

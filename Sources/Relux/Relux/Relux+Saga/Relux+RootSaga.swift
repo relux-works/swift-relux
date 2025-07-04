@@ -22,7 +22,7 @@ extension Relux.RootSaga: Relux.Subscriber {
             .concurrentMap {
                 switch $0.value {
                     case let flow as Relux.Flow: await flow.apply(effect)
-                    case let saga as Relux.Saga: await saga.apply(effect)
+                    default: await $0.value.apply(effect)
                 }
             }
             .reducedResult

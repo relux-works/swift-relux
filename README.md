@@ -1,7 +1,7 @@
 # Relux
 
-![Swift](https://img.shields.io/badge/Swift-5.10+-orange.svg)
-![Platforms](https://img.shields.io/badge/Platforms-iOS%20|%20macOS%20|%20tvOS%20|%20watchOS-lightgray.svg)
+[![Platforms](https://img.shields.io/badge/platforms-iOS%20%7C%20macOS%20%7C%20tvOS%20%7C%20watchOS%20%7C%20Linux%20%7C%20Android-blue)](#)
+[![Swift](https://img.shields.io/badge/Swift-6.2%20%7C%206.1%20%7C%206.0%20%7C%205.10-orange)](#)
 ![License](https://img.shields.io/badge/License-MIT-blue.svg)
 ![SPM](https://img.shields.io/badge/SPM-compatible-brightgreen.svg)
 

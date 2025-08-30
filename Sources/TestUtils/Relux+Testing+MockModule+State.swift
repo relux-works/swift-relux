@@ -1,4 +1,8 @@
-import Foundation
+#if canImport(FoundationEssentials)
+@_exported import FoundationEssentials
+#else
+@_exported import Foundation
+#endif
 
 extension Relux.Testing.MockModule {
     public actor State: Relux.BusinessState {

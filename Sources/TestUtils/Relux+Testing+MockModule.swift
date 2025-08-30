@@ -1,5 +1,3 @@
-import Foundation
-
 extension Relux.Testing {
     public actor MockModule<A: Relux.Action, E: Relux.Effect, Phantom>: Relux.Module {
         public let actionsLogger: State

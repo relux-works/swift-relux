@@ -1,6 +1,6 @@
 extension Relux {
     /// Provides caseName and associatedValues custom mirrors for enumerations.
-    public protocol EnumReflectable: CaseNameReflectable, AssociatedValuesReflectable {
+    public protocol EnumReflectable: CaseNameReflectable, AssociatedValuesReflectable, Sendable {
         var subsystem: String { get }
         var category: String { get }
     }

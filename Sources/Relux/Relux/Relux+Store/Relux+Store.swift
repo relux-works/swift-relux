@@ -8,6 +8,9 @@ extension Relux {
 
         public private(set) var uiStates: [TypeKeyable.Key: any Relux.UIState] = [:]
 
+        /// State relays for UI observation, keyed by Snapshot type.
+        public private(set) var relays: [TypeKeyable.Key: any Relux.StateRelaying] = [:]
+
         public init() {
         }
     }
@@ -56,6 +59,13 @@ extension Relux.Store {
         let state = businessStates[T.key]
         return state as! T
     }
+
+    /// Retrieves a relay by its Snapshot type.
+    @MainActor
+    public func getRelay<S: Relux.StateSnapshot>(for snapshotType: S.Type) -> (any Relux.StateRelaying)? {
+        let key: TypeKeyable.Key = ObjectIdentifier(S.self)
+        return relays[key]
+    }
 }
 
 // connectors
@@ -93,6 +103,16 @@ extension Relux.Store {
             fatalError("failed to add state, already exists: \(state)")
         }
         uiStates[state.key] = state
+    }
+
+    /// Connects a state relay for UI observation.
+    /// - Parameter relay: The relay to connect, keyed by its Snapshot type.
+    public func connect(relay: some Relux.StateRelaying) {
+        let key = relay.snapshotTypeKey
+        guard relays[key] == nil else {
+            fatalError("failed to add relay, already exists for snapshot type key: \(key)")
+        }
+        relays[key] = relay
     }
 }
 

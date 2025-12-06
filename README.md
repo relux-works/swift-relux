@@ -61,6 +61,83 @@ Relux provides three state types, each designed for specific use cases:
 
 Think of it like cooking: HybridState is your all-in-one pressure cooker, while BusinessState + UIState is your professional kitchen with separate prep and plating stations.
 
+### State Snapshots and Relays
+
+When using the API/Impl modularization pattern, you often want to expose state to consumers without leaking implementation details. Relux provides a snapshot/relay system for this:
+
+**The Problem:**
+- Your API module defines *what* data is available (the contract)
+- Your Impl module defines *how* that data is managed (the implementation)
+- UI consumers should depend only on the API module
+
+**The Solution:**
+
+1. **StateSnapshot** – A lightweight, immutable value type representing a point-in-time view of your state:
+
+```swift
+// In your API module
+public struct OrientationSnapshot: Relux.StateSnapshot {
+    public let orientation: DeviceOrientation
+    public let isMonitoring: Bool
+}
+```
+
+2. **SnapshotProviding** – Protocol for states that emit snapshots:
+
+```swift
+// In your Impl module
+@MainActor
+public final class OrientationState: Relux.HybridState, SnapshotProviding {
+    public var current: OrientationSnapshot { /* build snapshot from internal state */ }
+    public var snapshots: AsyncStream<OrientationSnapshot> { /* stream of updates */ }
+}
+```
+
+3. **StateRelaying** – Protocol for objects that relay snapshots to UI. The concrete implementation (`Relux.UI.StateRelay`) lives in swiftui-relux and conforms to `ObservableObject`:
+
+```swift
+// In your API module, define a typealias for consumers
+public typealias OrientationRelay = Relux.UI.StateRelay<OrientationSnapshot>
+
+// In your Impl module, create the relay
+let relay = OrientationRelay(orientationState)
+```
+
+4. **Module Integration** – Modules expose relays via the `relays` property:
+
+```swift
+public struct OrientationModule: Relux.Module {
+    public let states: [any Relux.AnyState]
+    public let sagas: [any Relux.Saga]
+    public let relays: [any Relux.StateRelaying]
+
+    @MainActor
+    public init(state: OrientationState, saga: OrientationSaga) {
+        self.states = [state]
+        self.sagas = [saga]
+        self.relays = [OrientationRelay(state)]
+    }
+}
+```
+
+5. **SwiftUI Usage** – Relays are automatically injected into the environment:
+
+```swift
+struct MyView: View {
+    @EnvironmentObject var orientationRelay: OrientationRelay
+
+    var body: some View {
+        Text("Orientation: \(orientationRelay.value.orientation)")
+    }
+}
+```
+
+**Benefits:**
+- Clean API/Impl separation with compile-time enforcement
+- Type-safe relay lookup via `store.getRelay(for: OrientationSnapshot.self)`
+- Automatic duplicate prevention (one relay per snapshot type)
+- Relays subscribe to state streams and republish for SwiftUI observation
+
 ### Modules and Sagas
 
 Relux encourages dividing your codebase into feature modules. A `Module` bundles states, sagas or flows, and supporting services. Sagas orchestrate effects such as network requests, while services encapsulate integrations with APIs, databases, sensors etc. Modules can be registered at runtime and expose states ready for consumption by the UI or by other modules.

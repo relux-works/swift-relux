@@ -6,24 +6,26 @@ public final class Relux: Sendable {
 
     public static var shared: Relux!
 
-    public init(
-        logger: (any Relux.Logger),
-        appStore: Store = .init(),
-        rootSaga: RootSaga = .init()
-    ) async {
-        self.store = appStore
-        self.rootSaga = rootSaga
-        self.dispatcher = .init(
-            subscribers: [appStore, rootSaga],
-            logger: logger
-        )
-        
-        guard Self.shared.isNil
-        else { fatalError("only one instance of Relux is allowed") }
-        Self.shared = self
+        public init(
+            logger: (any Relux.Logger),
+            appStore: Store = .init(),
+            rootSaga: RootSaga = .init(),
+            bindToShared: Bool = true
+        ) async {
+            self.store = appStore
+            self.rootSaga = rootSaga
+            self.dispatcher = .init(
+                subscribers: [appStore, rootSaga],
+                logger: logger
+            )
+    
+            if bindToShared {
+                guard Self.shared.isNil
+                else { fatalError("only one instance of Relux is allowed. To create a test instance, pass bindToShared: false") }
+                Self.shared = self
+            }
+        }
     }
-}
-
 // register
 extension Relux {
     @discardableResult
@@ -35,6 +37,10 @@ extension Relux {
         module
             .sagas
             .forEach { self.rootSaga.connectSaga(saga: $0) }
+
+        module
+            .relays
+            .forEach { self.store.connect(relay: $0) }
 
         return self
     }

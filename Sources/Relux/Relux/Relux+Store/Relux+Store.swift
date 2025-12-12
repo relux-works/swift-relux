@@ -7,9 +7,8 @@ extension Relux {
         internal private(set) var tempStates: [TypeKeyable.Key: StateRef] = [:]
 
         public private(set) var uiStates: [TypeKeyable.Key: any Relux.UIState] = [:]
-
-        /// State relays for UI observation, keyed by Snapshot type.
         public private(set) var relays: [TypeKeyable.Key: any Relux.StateRelaying] = [:]
+        public private(set) var actionRelays: [TypeKeyable.Key: any Relux.ActionRelaying] = [:]
 
         public init() {
         }
@@ -113,6 +112,14 @@ extension Relux.Store {
             fatalError("failed to add relay, already exists for snapshot type key: \(key)")
         }
         relays[key] = relay
+    }
+    
+    public func connect(actionRelay: some Relux.ActionRelaying) {
+        let key = type(of: actionRelay).key
+        guard actionRelays[key] == nil else {
+            fatalError("ActionRelay already registered: \(key)")
+        }
+        actionRelays[key] = actionRelay
     }
 }
 

@@ -39,8 +39,12 @@ extension Relux {
             .forEach { self.rootSaga.connectSaga(saga: $0) }
 
         module
-            .relays
+            .relays // todo: rename to state snapshot relays
             .forEach { self.store.connect(relay: $0) }
+
+        module
+            .actionRelays
+            .forEach { self.store.connect(actionRelay: $0) }
 
         return self
     }

@@ -68,8 +68,8 @@ Relux encourages dividing your codebase into feature modules. A `Module` bundles
 ## Documentation
 
 - [Sample App](https://github.com/ivalx1s/relux-sample) - Full-featured example application
-- [API Reference](https://github.com/ivalx1s/darwin-relux/wiki) - Coming soon
-- [Architecture Guide](https://github.com/ivalx1s/darwin-relux/wiki) - Coming soon
+- [API Reference](https://github.com/relux-works/swift-relux/wiki) - Coming soon
+- [Architecture Guide](https://github.com/relux-works/swift-relux/wiki) - Coming soon
 
 ## Requirements
 

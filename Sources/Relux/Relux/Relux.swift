@@ -6,10 +6,20 @@ public final class Relux: Sendable {
 
     public static var shared: Relux!
 
+    public convenience init(
+        logger: (any Relux.Logger)
+    ) async {
+        await self.init(
+            logger: logger,
+            appStore: .init(),
+            rootSaga: .init()
+        )
+    }
+
     public init(
         logger: (any Relux.Logger),
-        appStore: Store = .init(),
-        rootSaga: RootSaga = .init()
+        appStore: Store,
+        rootSaga: RootSaga
     ) async {
         self.store = appStore
         self.rootSaga = rootSaga
@@ -17,7 +27,7 @@ public final class Relux: Sendable {
             subscribers: [appStore, rootSaga],
             logger: logger
         )
-        
+
         guard Self.shared.isNil
         else { fatalError("only one instance of Relux is allowed") }
         Self.shared = self

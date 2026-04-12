@@ -34,3 +34,6 @@ Carthage/Build
 gitrelease
 
 DerivedData/
+Derived/*
+!Derived/InfoPlists/
+!Derived/InfoPlists/*.plist

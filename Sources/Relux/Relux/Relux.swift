@@ -37,6 +37,13 @@ public final class Relux: Sendable {
 // register
 extension Relux {
     @discardableResult
+    public func register(_ modules: [Module]) -> Relux {
+        modules
+            .forEach { self.register($0) }
+        return self
+    }
+
+    @discardableResult
     public func register(_ module: Module) -> Relux {
         module
             .states

@@ -4,6 +4,7 @@
 
 # notes
 notes
+.temp/
 
 ## OS X
 *.DS_Store
@@ -35,5 +36,3 @@ gitrelease
 
 DerivedData/
 Derived/*
-!Derived/InfoPlists/
-!Derived/InfoPlists/*.plist

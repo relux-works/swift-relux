@@ -79,6 +79,16 @@ Relux encourages dividing your codebase into feature modules. A `Module` bundles
 
 <img width="634" alt="redux-architecture" src="https://user-images.githubusercontent.com/11797926/204153109-1bc9a581-48aa-4bdd-a718-f6bdbac3e665.png">
 
+## The Relux stack
+
+This package is part of the Relux stack: the
+[Relux](https://github.com/relux-works/swift-relux) unidirectional data-flow
+architecture for Swift 6, a family of modules around it, and agent-ready testing
+tools. The stack is how we build MVPs fast on agentic rails and then scale them into
+enterprise-grade apps: Tuist workspaces, strict modularization, and a UDF architecture
+proven in production for years. Browse the full picture in the
+[Relux Works open-source catalog](https://relux.works/en/open-source/).
+
 <!-- relux-ecosystem:start -->
 
 ## About Relux Works
